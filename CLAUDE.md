@@ -81,8 +81,9 @@ The abacus grows to `digits + 2` rods. Best scores are saved per settings combin
 
 ## Ideas the owner wants next (roadmap)
 
+The site covers the same 34 rules as the owner's book. **The owner has decided: no multiplication, division or times tables.** Keep the scope to adding and taking away.
+
 1. Rule Mixer: mixed practice across all 34 rules, ending with a "Rules Champion" test and badge.
-2. Checkpoint "Do you know your times tables?" with a quick quiz; times-table lessons for kids who need them.
-3. Multiplication and division on the abacus, using the same lesson flow.
-4. A more human voice: pre-recorded clips (the owner's own voice or generated with a TTS service) with the browser voice as fallback.
-5. Launch on Netlify or GitHub Pages; optional custom domain.
+2. A more human voice: pre-recorded clips (the owner's own voice or generated with a TTS service) with the browser voice as fallback.
+3. Optional custom domain. Live now at `https://jiacode2030.github.io/bead-buddies/` (GitHub Pages, deploys from `main`). Moving to a new domain resets kids' saved progress (new origin), so add a progress backup first.
+4. Maybe: "Save / load my progress" (file or code, on-device only) so progress survives Safari's 7-day cleanup and device changes.
