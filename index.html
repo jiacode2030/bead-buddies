@@ -1,0 +1,1426 @@
+<title>Bead Buddies</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a calm study room. Course map = list of lesson rows by unit; a lesson = coach panel (Mochi & Coco) beside a real wooden soroban. Single light look on purpose. */
+:root{
+  color-scheme: light;
+  --bg:#F3F4F6; --paper:#FFFFFF; --ink:#1B2130; --muted:#5D6575; --line:#E0E3E9; --soft:#F7F8FA;
+  --accent:#0E6E68; --accent-dark:#0A524D; --accent-soft:#E3F2F0;
+  --amber:#D98B2B; --amber-soft:#FBF0DF; --good:#1D7F52; --good-soft:#E2F4EA; --warn:#B4472F; --warn-soft:#FBE9E4;
+  --wood:#5A3920; --wood-dark:#3F2614; --wood-top:#6A4528; --backing:#ECE2CF; --rod:#9A7A52; --beam:#6E4A2E; --dot:#F6EFE2;
+  --bead-hi:#8C5C3B; --bead:#4A2C19; --bead-lo:#22130A; --gold-hi:#F6D08A; --gold:#D98B2B; --gold-lo:#9C5A14;
+  --skin:#F2CDAA; --skin-line:#C8936B; --nail:#FBE6D4;
+  --ui:"Lexend", "Segoe UI", system-ui, sans-serif;
+  --bh:42px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.55}
+button{font-family:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-block:0 48px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:14px;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.2rem;background:none;border:0;cursor:pointer;padding:0}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:var(--wood);display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:6px 5px}
+.logo-mark i{border-radius:2px;background:var(--bead-hi)}
+.logo-mark i:nth-child(2){background:var(--gold)}
+.spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:.9rem;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:7px 12px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip svg{width:17px;height:17px;flex:none}
+.chip select{font:inherit;border:0;background:transparent;color:var(--ink);max-width:170px;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.95rem;border-radius:10px;padding:10px 16px;cursor:pointer;background:var(--paper);border:1px solid var(--line)}
+.btn:hover{border-color:var(--accent)}
+.btn svg{width:18px;height:18px}
+.btn.go{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.btn.go:hover{background:var(--accent-dark)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 24px;margin-bottom:28px}
+.hero h1{font-size:clamp(1.6rem,4vw,2.2rem);line-height:1.15;margin:0 0 6px;text-wrap:balance}
+.hero p{margin:0 0 14px;color:var(--muted);max-width:56ch}
+@media (max-width:600px){.hero{grid-template-columns:minmax(0,1fr)}}
+.unit{margin-bottom:28px}
+.unit-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.tag{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.unit-head h2{font-size:1.3rem;margin:0}
+.unit .blurb{margin:0 0 12px;color:var(--muted)}
+.lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.lrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.lrow:hover{border-color:var(--accent)}
+.lrow .num{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-weight:700;background:var(--accent-soft);color:var(--accent);font-variant-numeric:tabular-nums}
+.lrow .t{font-weight:600;line-height:1.25}
+.lrow .s{font-size:.82rem;color:var(--muted);line-height:1.3}
+.lrow.locked{cursor:not-allowed;background:var(--soft)}
+.lrow.locked .num{background:var(--line);color:var(--muted)}
+.lrow.locked .t{color:var(--muted)}
+.lrow.next{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.stars{display:flex;gap:1px;font-size:.95rem}
+.stars .st,.big .st{color:var(--line)}.stars .st.on,.big .st.on{color:var(--amber)}
+.coming{border:1px dashed var(--line);border-radius:12px;padding:14px 16px;color:var(--muted);background:var(--paper)}
+
+.lesson-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.lesson-head h1{font-size:clamp(1.25rem,3vw,1.6rem);margin:0;line-height:1.2}
+.lesson-head .tag{display:block}
+.stepper{display:flex;flex-wrap:wrap;margin-bottom:18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stepper button{flex:1 1 130px;display:flex;align-items:center;gap:8px;justify-content:center;font-weight:500;font-size:.9rem;padding:10px 8px;background:transparent;border:0;border-right:1px solid var(--line);cursor:pointer}
+.stepper button:last-child{border-right:0}
+.stepper .k{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700;background:var(--line);color:var(--muted)}
+.stepper button.cur{background:var(--accent-soft);color:var(--accent-dark);font-weight:700}
+.stepper button.cur .k{background:var(--accent);color:var(--paper)}
+.stepper button.done .k{background:var(--good);color:var(--paper)}
+.stepper button:disabled{cursor:not-allowed;color:var(--muted)}
+
+.stage{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:880px){.stage{grid-template-columns:minmax(0,1fr)}}
+.coach{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.talk{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.bubble{background:var(--soft);border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:10px 14px;min-width:0}
+.bubble .who{display:block;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.bubble .say{font-weight:500}
+.coach h2{font-size:1.35rem;margin:0;line-height:1.25;text-wrap:balance}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.facts li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--soft)}
+.facts .ic{display:grid;place-items:center}
+.formula{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700;font-size:clamp(1.6rem,5vw,2.2rem);line-height:1;font-variant-numeric:tabular-nums}
+.formula .part{padding:6px 12px;border-radius:10px;background:var(--soft);border:1px solid var(--line);transition:background .2s, border-color .2s}
+.formula .lhs{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent-dark)}
+.formula .part.lit{background:var(--amber-soft);border-color:var(--amber)}
+.formula .eq{color:var(--muted);font-weight:500}
+.friends{color:var(--muted)}
+.explain{margin:0;max-width:62ch}
+.lbl{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.finger{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--amber-soft);color:var(--gold-lo);white-space:nowrap}
+.caption{min-height:4.4em;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--soft);font-weight:500}
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.checklist li{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;padding:10px 12px;border-radius:10px;border:1px solid var(--line)}
+.checklist li .box{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem;font-weight:700;color:var(--paper);margin-top:2px}
+.checklist li .txt{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.checklist li.cur{border-color:var(--amber);background:var(--amber-soft)}
+.checklist li.done{color:var(--muted)}
+.checklist li.done .box{background:var(--good);border-color:var(--good)}
+.msg{font-weight:500;border-radius:10px;padding:10px 14px;background:var(--soft)}
+.msg.ok{background:var(--good-soft);color:var(--good)}
+.msg.oops{background:var(--warn-soft);color:var(--warn)}
+.prompt{font-size:clamp(1.4rem,4vw,1.9rem);font-weight:700;line-height:1.2;text-wrap:balance}
+.prompt b{color:var(--accent)}
+.prompt.eq{font-size:clamp(2.2rem,7vw,3rem);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.qbar{display:flex;gap:6px}
+.qbar i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.qbar i.cur{background:var(--amber)}.qbar i.ok{background:var(--good)}
+.results{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.results .big{font-size:2.4rem;letter-spacing:4px;line-height:1}
+
+.board{display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0}
+.readout{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.number{font-weight:700;font-size:clamp(2.2rem,7vw,3rem);line-height:1;min-width:3ch;text-align:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 16px;font-variant-numeric:tabular-nums}
+.toggle{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted);cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--accent)}
+.frame{width:100%;max-width:400px;background:var(--backing);border:14px solid var(--wood);border-top-color:var(--wood-top);border-bottom-color:var(--wood-dark);border-radius:14px;padding:4px 2px;
+  box-shadow:inset 0 3px 10px rgba(40,20,5,.28), 0 14px 26px -14px rgba(40,20,5,.6)}
+.rods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.rod{display:flex;flex-direction:column;transition:opacity .25s}
+.zone{position:relative}
+.zone::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:5px;margin-left:-2.5px;background:var(--rod);border-radius:3px;transition:background .25s}
+.heaven{height:calc(var(--bh)*2 + 10px)}
+.earth{height:calc(var(--bh)*5 + 10px)}
+.beam{height:16px;background:var(--beam);position:relative;transition:box-shadow .25s}
+.beam .dot{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--dot)}
+.bead{position:absolute;left:9%;width:82%;height:calc(var(--bh) - 3px);top:calc(5px + var(--bh) * var(--k));border:0;padding:0;cursor:pointer;
+  clip-path:polygon(0 50%,22% 0,78% 0,100% 50%,78% 100%,22% 100%);
+  background:linear-gradient(180deg,var(--bead-hi) 0%,var(--bead) 42%,var(--bead) 58%,var(--bead-lo) 100%);
+  transition:top .3s cubic-bezier(.34,1.5,.6,1), opacity .25s}
+.bead:hover{filter:brightness(1.15)}
+.bead.glow{background:linear-gradient(180deg,var(--gold-hi) 0%,var(--gold) 45%,var(--gold) 58%,var(--gold-lo) 100%);animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{filter:brightness(1.18)}}
+.number.pop{animation:pop .32s ease}
+@keyframes pop{40%{transform:scale(1.14)}}
+.talk > svg{transform-origin:50% 90%;animation:bob 3.4s ease-in-out infinite}
+.talk > svg.jump{animation:jump .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bob{50%{transform:translateY(-3px) rotate(-2deg)}}
+@keyframes jump{30%{transform:translateY(-14px) rotate(6deg)}60%{transform:translateY(0) scale(1.06,.94)}}
+.frame.win{animation:win .8s ease}
+@keyframes win{30%{box-shadow:inset 0 3px 10px rgba(40,20,5,.28),0 0 0 7px var(--good),0 14px 26px -14px rgba(40,20,5,.6)}}
+.coach > *{animation:rise .38s ease both}
+.coach > *:nth-child(2){animation-delay:.05s}.coach > *:nth-child(3){animation-delay:.1s}.coach > *:nth-child(4){animation-delay:.15s}.coach > *:nth-child(5){animation-delay:.2s}.coach > *:nth-child(n+6){animation-delay:.25s}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+.formula .part.lit{animation:litpop .4s ease}
+@keyframes litpop{40%{transform:scale(1.12)}}
+.big .st{display:inline-block;animation:starpop .55s cubic-bezier(.3,1.7,.5,1) both}
+.big .st:nth-child(2){animation-delay:.18s}.big .st:nth-child(3){animation-delay:.36s}
+@keyframes starpop{from{transform:scale(0) rotate(-40deg);opacity:0}}
+.qbar i.ok{animation:fillin .4s ease}
+@keyframes fillin{from{transform:scaleX(.2)}}
+.prompt.eq b.solved{animation:pop .4s ease;color:var(--good)}
+.frame.locked .bead{cursor:default}
+.frame[data-spot="heaven"] .bead.e,.frame[data-spot="earth"] .bead.h,.frame[data-spot="beam"] .bead,.frame[data-spot="rods"] .bead{opacity:.25}
+.frame[data-spot="beam"] .beam{box-shadow:0 0 0 3px var(--gold)}
+.frame[data-spot="ones"] .rod:not(:last-child){opacity:.3}
+.frame[data-spot="rods"] .zone::before{background:var(--gold)}
+.places{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;max-width:400px}
+.places span{text-align:center;font-size:.82rem;font-weight:500;color:var(--muted)}
+.places span:last-child{color:var(--accent);font-weight:700}
+.abacus-row{display:flex;gap:14px;align-items:center;justify-content:center;width:100%;flex-wrap:wrap}
+.abacus-col{flex:1 1 280px;max-width:380px;display:flex;flex-direction:column;gap:6px;align-items:center;min-width:0}
+.abacus-col .frame,.abacus-col .places{max-width:380px}
+.abacus-col{position:relative}
+.pointer{position:absolute;left:0;top:0;width:0;height:0;transform:translate(var(--x,50%),var(--y,0px));transition:transform .55s cubic-bezier(.3,.8,.3,1),opacity .25s;opacity:0;pointer-events:none;z-index:6}
+.pointer.on{opacity:1}
+.pointer .tip{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:var(--gold);border:3px solid var(--paper);box-shadow:0 0 0 2px var(--gold-lo),0 4px 10px rgba(40,20,5,.35);box-sizing:border-box}
+.pointer .tip::after{content:"";position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid var(--gold);opacity:0}
+.pointer .plabel{position:absolute;left:0;top:20px;transform:translateX(-50%);font-size:.64rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:2px 7px;border-radius:5px;white-space:nowrap}
+.pointer.hover .tip{animation:hover 1.1s ease-in-out infinite}
+.pointer .tip.press{animation:press .32s ease}
+.pointer .tip.press::after{animation:ripple .5s ease-out}
+@keyframes ripple{from{opacity:.9;transform:scale(.5)}to{opacity:0;transform:scale(1.25)}}
+@keyframes hover{50%{transform:translateY(-5px)}}
+@keyframes press{45%{transform:scale(.8)}}
+.preview{background:var(--amber-soft);border:1px solid var(--amber);color:var(--gold-lo);border-radius:12px;padding:10px 14px;margin:-12px 0 20px;font-weight:500}
+.hand-card{flex:0 0 128px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+@media (max-width:560px){.hand-card{flex:1 1 100%;flex-direction:row;justify-content:center;gap:12px;text-align:left}.hand-card .hand{width:84px}}
+.hand{width:104px;height:auto;overflow:visible}
+.hand .finger-g rect:not(.nail),.hand .palm{fill:var(--skin);stroke:var(--skin-line);stroke-width:1.6}
+.hand .nail{fill:var(--nail);stroke:none}
+.hand .crease{fill:none;stroke:var(--skin-line);stroke-width:1.2;stroke-linecap:round;opacity:.6}
+.hand .finger-g{transition:opacity .25s;transform-box:fill-box}
+.hand .arrow{fill:none;stroke:var(--gold);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .2s}
+.hand-card[data-act] .finger-g{opacity:.5}
+.hand-card[data-act=""] .finger-g{opacity:1}
+.hand-card[data-act^="thumb"] .thumb,.hand-card[data-act^="index"] .index,.hand-card[data-act="pinch-up"] .thumb,.hand-card[data-act="pinch-up"] .index{opacity:1}
+.hand-card[data-act^="thumb"] .thumb rect:not(.nail),.hand-card[data-act^="index"] .index rect:not(.nail),.hand-card[data-act="pinch-up"] .finger-g:not(.other) rect:not(.nail){fill:var(--gold-hi);stroke:var(--gold-lo)}
+.hand-card[data-act="thumb-up"] .thumb{animation:thumbUp 1s ease-in-out infinite}
+.hand-card[data-act="index-down"] .index{animation:indexDown 1s ease-in-out infinite}
+.hand-card[data-act="index-up"] .index,.hand-card[data-act="pinch-up"] .index{animation:indexUp 1s ease-in-out infinite}
+.hand-card[data-act="pinch-up"] .thumb{animation:thumbUp 1s ease-in-out infinite}
+.hand-card[data-act="thumb-up"] .a-thumb,.hand-card[data-act="index-down"] .a-index-down,.hand-card[data-act="index-up"] .a-index-up,.hand-card[data-act="pinch-up"] .a-thumb,.hand-card[data-act="pinch-up"] .a-index-up{opacity:1}
+@keyframes thumbUp{50%{transform:translate(3px,-12px)}}
+@keyframes indexDown{50%{transform:translateY(12px)}}
+@keyframes indexUp{50%{transform:translateY(-12px)}}
+.hand-label{font-size:.82rem;font-weight:600;line-height:1.3;color:var(--ink);min-height:2.6em}
+.hand-card[data-act=""] .hand-label{color:var(--muted);font-weight:500}
+@media (prefers-reduced-motion:reduce){.hand .finger-g{animation:none!important}}
+.l2r{font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.l2r svg{width:16px;height:16px}
+.setup-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+.setup-head h1{font-size:clamp(1.6rem,4vw,2.1rem);margin:2px 0 4px;line-height:1.15}
+.setup-head p{margin:0;color:var(--muted);max-width:56ch}
+@media (max-width:560px){#setupPups{display:none}}
+.setup{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:22px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.mode{text-align:left;border:1.5px solid var(--line);background:var(--soft);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:4px;font:inherit;color:var(--ink)}
+.mode:hover{border-color:var(--accent)}
+.mode.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}
+.mode-k{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.mode-t{font-weight:700;font-size:1.05rem}
+.mode-d{font-size:.88rem;color:var(--muted);line-height:1.4}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px 28px}
+.setting{display:flex;flex-direction:column;gap:6px;min-width:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:inherit;font-weight:600;font-size:.92rem;min-width:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.seg button:hover{border-color:var(--accent)}
+.seg button[aria-checked="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.best{font-size:.9rem;color:var(--muted)}
+.drill-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.watch{font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:3px 10px}
+.drill-body{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:480px){.drill-body{grid-template-columns:minmax(0,1fr)}}
+.sheet{display:flex;flex-direction:column;min-width:8ch;font-size:clamp(1.6rem,5vw,2.1rem);font-weight:700;font-variant-numeric:tabular-nums;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.srow{display:grid;grid-template-columns:1.1ch minmax(0,1fr) 1em;gap:8px;align-items:center;padding:1px 8px;border-radius:8px;text-align:right}
+.srow .sg{text-align:left;color:var(--muted)}
+.srow .ck{color:var(--good);font-size:.6em;text-align:left}
+.srow.cur{background:var(--amber-soft);box-shadow:inset 0 0 0 2px var(--amber)}
+.srow.done{color:var(--muted)}
+.srow.next .sn{color:transparent;background:var(--line);border-radius:6px}
+.sline{border-top:3px solid var(--ink);margin:6px 0 2px}
+.sn.ok{color:var(--good)}.sn.bad{color:var(--warn)}
+.drill-side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.answer{display:flex;gap:8px}
+.answer input{flex:1;min-width:0;font:inherit;font-size:1.5rem;font-weight:700;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;font-variant-numeric:tabular-nums;background:var(--paper);color:var(--ink)}
+.answer input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.flash{display:grid;place-items:center;min-height:clamp(220px,38vh,340px);background:var(--ink);border-radius:16px;position:relative;color:var(--paper)}
+.fl-n{font-size:clamp(4rem,16vw,8rem);font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.fl-n.small{font-size:clamp(2rem,7vw,3rem);color:var(--gold-hi)}
+.fl-n.in{animation:flin .16s ease-out}
+@keyframes flin{from{transform:scale(.86);opacity:.35}}
+.fl-c{position:absolute;bottom:10px;right:14px;font-size:.8rem;font-weight:600;color:var(--line)}
+.reveal{font-size:1.15rem;font-weight:600;font-variant-numeric:tabular-nums;word-break:break-word}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;width:100%}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:.8rem;color:var(--muted)}
+.stage.solo{grid-template-columns:minmax(0,1fr);max-width:760px;margin:0 auto}
+.stage.solo .board{display:none}
+.board.nohand .hand-card{display:none}
+.play{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px;align-items:center}
+.confetti{position:fixed;top:-16px;width:8px;height:12px;border-radius:2px;pointer-events:none;z-index:50;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (min-width:881px){:root{--bh:44px}}
+@media (prefers-reduced-motion:reduce){.bead,.pointer{transition:none}.bead.glow,.talk > svg,.coach > *,.number.pop,.big .st,.pointer .tip{animation:none!important}.confetti{display:none}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <button class="logo" id="homeBtn" aria-label="Bead Buddies course"><span class="logo-mark"><i></i><i></i><i></i></span>Bead Buddies</button>
+    <span class="spacer"></span>
+    <button class="chip" id="drillBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2h4"/></svg>Practice</button>
+    <button class="chip" id="playBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M12 4v16M16 4v16M3 10h18"/></svg>Free play</button>
+    <label class="chip" id="voiceWrap" hidden>Voice <select id="voiceSel" aria-label="Narrator voice"></select></label>
+    <button class="chip" id="muteBtn" aria-pressed="false"></button>
+  </div>
+
+  <section id="mapView">
+    <div class="hero">
+      <div id="heroPups"></div>
+      <div>
+        <h1>Learn the soroban with Mochi and Coco</h1>
+        <p>Mochi explains each rule and shows you how. Coco tries it with you. Then you practice on your own until it's easy.</p>
+        <div class="row"><button class="btn go" id="continueBtn">Start learning</button><button class="btn" id="heroDrill">Go to practice</button></div>
+      </div>
+    </div>
+    <div id="units"></div>
+    <div class="coming">Coming next: Rule Mixer practice, times tables, then multiplication and division on the abacus.</div>
+  </section>
+
+  <section id="lessonView" hidden>
+    <div class="lesson-head">
+      <button class="chip" id="backBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Course</button>
+      <div><span class="tag" id="lessonTag"></span><h1 id="lessonTitle"></h1></div>
+    </div>
+    <div class="stepper" id="stepper"></div>
+    <div class="stage" id="stage">
+      <div class="coach" id="coach"></div>
+      <div class="board" id="board">
+        <div class="readout">
+          <div class="number" id="lessonNum" aria-live="polite">0</div>
+          <label class="toggle"><input type="checkbox" id="lessonHide"> Hide number</label>
+        </div>
+        <div class="abacus-row">
+          <div class="abacus-col" id="abacusCol">
+            <div class="pointer" id="pointer" aria-hidden="true"><span class="tip"></span><span class="plabel"></span></div>
+            <div class="frame" id="lessonFrame"><div class="rods"></div></div>
+            <div class="places"><span>Hundreds</span><span>Tens</span><span>Ones</span></div>
+          </div>
+          <div class="hand-card" id="handCard" data-act="">
+            <div class="lbl">Your hand</div>
+            <svg class="hand" viewBox="0 0 120 170" role="img" aria-label="Hand guide showing thumb and index finger">
+              <g class="arrow a-up"><path d="M60 4v20M52 12l8-8 8 8" /></g>
+              <g class="finger-g other">
+                <rect x="58" y="50" width="16" height="40" rx="8"/><rect x="76" y="56" width="15" height="36" rx="7.5"/><rect x="92" y="64" width="13" height="32" rx="6.5"/>
+                <path d="M60 60h12M78 66h11M94 73h9" class="crease"/>
+              </g>
+              <g class="finger-g index"><rect x="38" y="26" width="18" height="70" rx="9"/><rect x="41" y="29" width="12" height="11" rx="5" class="nail"/><path d="M41 58h12M41 72h12" class="crease"/></g>
+              <g class="finger-g thumb"><rect x="22" y="84" width="19" height="54" rx="9.5" transform="rotate(-32 31 132)"/><rect x="25" y="87" width="13" height="11" rx="5" class="nail" transform="rotate(-32 31 132)"/></g>
+              <path class="palm" d="M36 84h70a6 6 0 016 6v36c0 18-14 30-30 30H58c-14 0-24-10-24-24V90a6 6 0 012-6z"/>
+              <g class="arrow a-thumb"><path d="M6 80V56M-1 63l7-7 7 7"/></g>
+              <g class="arrow a-index-down"><path d="M26 30v26M19 49l7 7 7-7"/></g>
+              <g class="arrow a-index-up"><path d="M26 56V30M19 37l7-7 7 7"/></g>
+            </svg>
+            <div class="hand-label" id="handLabel">Watch which finger moves.</div>
+          </div>
+        </div>
+        <div class="l2r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>Always work left to right</div>
+        <button class="btn" id="lessonClear">Start this one over</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="practiceView" hidden>
+    <div class="setup-head">
+      <div><span class="tag">Practice</span><h1>Practice room</h1><p>Pick how you want to practice, then press Start. Mochi and Coco keep score.</p></div>
+      <div id="setupPups"></div>
+    </div>
+    <div class="setup" id="setup"></div>
+  </section>
+
+  <section id="playView" hidden>
+    <div class="play">
+      <div class="talk" style="width:100%"><div id="playPup"></div><div class="bubble"><span class="who">Coco</span><span class="say">Free play! Thumb pushes earth beads up to add. Index finger pulls them down and moves the five bead.</span></div></div>
+      <div class="readout"><div class="number" id="playNum">0</div><label class="toggle"><input type="checkbox" id="playHide"> Hide number</label></div>
+      <div class="frame" id="playFrame"><div class="rods"></div></div>
+      <div class="places"><span>Hundreds</span><span>Tens</span><span>Ones</span></div>
+      <button class="btn" id="playClear">Clear the board</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+const digit = (v, p) => Math.floor(v / p) % 10;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("beadbuddies:" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("beadbuddies:" + k, JSON.stringify(v)); } catch (e) {} }
+};
+const reduceMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const ICON = {
+  speak: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg>`,
+  play: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>`,
+  replay: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.7 9.7 0 00-6.7 2.7L3 8"/><path d="M3 3v5h5"/></svg>`,
+  bulb: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9V16h7v-2.1A6 6 0 0012 3z"/></svg>`,
+  lock: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>`
+};
+
+// ---------- sound + voice ----------
+let muted = store.get("muted", false), actx = null;
+function tone(freq, dur, type = "sine", vol = .12, delay = 0) {
+  if (muted) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur);
+  } catch (e) {}
+}
+const sfx = {
+  click() { tone(1400, .03, "square", .035); tone(700, .04, "triangle", .06); },
+  good() { tone(660, .12); tone(990, .2, "sine", .1, .1); },
+  oops() { tone(240, .16, "sine", .08); },
+  win() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, "sine", .1, i * .11)); }
+};
+// Voice: pick the most natural voice on this device, speak sentence by sentence
+// (long utterances glitch in Chrome), and let callers wait until speech ends.
+let voices = [], voiceName = store.get("voice", ""), speakId = 0;
+const PREFER = [/(ava|emma|jenny|aria|michelle|andrew|brian).*natural/i, /natural/i, /neural/i, /premium/i, /enhanced/i, /google us english/i, /samantha/i, /\bava\b/i, /aria/i, /jenny/i, /allison/i, /zoe/i, /karen/i, /serena/i, /google uk english female/i];
+function loadVoices() {
+  try { voices = speechSynthesis.getVoices().filter(v => /^en[-_]/i.test(v.lang)); } catch (e) { voices = []; }
+  renderVoicePicker();
+}
+function bestVoice() {
+  if (voiceName) { const v = voices.find(v => v.name === voiceName); if (v) return v; }
+  for (const re of PREFER) { const v = voices.find(v => re.test(v.name) && /en[-_]US/i.test(v.lang)) || voices.find(v => re.test(v.name)); if (v) return v; }
+  return voices.find(v => /en[-_]US/i.test(v.lang)) || voices[0] || null;
+}
+// Rewrite display text into what a person would actually say out loud.
+function spoken(text) {
+  return String(text)
+    .replace(/\s*\([^)]*[+−=][^)]*\)/g, "")
+    .replace(/(Ones|Tens|Hundreds) rod: /g, (m, r) => `On the ${r.toLowerCase()} rod, `)
+    .replace(/(\d+)\s*\+\s*(\d+)\s*=\s*(\d+)/g, "$1 plus $2 is $3")
+    .replace(/\s*=\s*\?/g, "")
+    .replace(/(\d+)\s*\+\s*(\d+)/g, "$1 plus $2")
+    .replace(/(\d+)\s*−\s*(\d+)/g, "$1 minus $2")
+    .replace(/\+(\d)/g, "plus $1").replace(/−(\d)/g, "minus $1")
+    .replace(/\s+/g, " ").trim();
+}
+function stopSpeech() { speakId++; try { speechSynthesis.cancel(); } catch (e) {} }
+function speak(text) {
+  return new Promise(resolve => { try { speakInner(text, resolve); } catch (e) { resolve(); } });
+}
+function speakInner(text, resolve) {
+  {
+    if (muted || !("speechSynthesis" in window)) { resolve(); return; }
+    stopSpeech();
+    const id = speakId;
+    const clean = spoken(text);
+    const parts = clean.match(/[^.!?]+[.!?]*/g) || [clean];
+    const v = bestVoice();
+    const rate = v && /google/i.test(v.name) ? .92 : 1;
+    let i = 0, done = false;
+    const finish = () => { if (!done) { done = true; resolve(); } };
+    const safety = setTimeout(finish, clean.length * 95 + 2500);
+    const next = () => {
+      if (id !== speakId || i >= parts.length) { clearTimeout(safety); finish(); return; }
+      const u = new SpeechSynthesisUtterance(parts[i++].trim());
+      if (v) { u.voice = v; u.lang = v.lang; }
+      u.rate = rate; u.pitch = 1;
+      u.onend = next; u.onerror = next;
+      try { speechSynthesis.speak(u); } catch (e) { clearTimeout(safety); finish(); }
+    };
+    setTimeout(next, 120);
+  }
+}
+function renderVoicePicker() {
+  const sel = $("voiceSel"); if (!sel) return;
+  $("voiceWrap").hidden = !voices.length;
+  const best = bestVoice();
+  sel.innerHTML = voices.map(v => `<option value="${v.name.replace(/"/g, "&quot;")}" ${best && v.name === best.name ? "selected" : ""}>${v.name.replace(/\s*\(.*?\)\s*/g, " ").trim()}</option>`).join("");
+}
+try { speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {}
+function renderMute() {
+  $("muteBtn").setAttribute("aria-pressed", String(muted));
+  $("muteBtn").innerHTML = muted
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>Sound off`
+    : `${ICON.speak}Sound on`;
+}
+$("muteBtn").onclick = () => { muted = !muted; store.set("muted", muted); if (muted) stopSpeech(); renderMute(); };
+$("voiceSel").onchange = e => { voiceName = e.target.value; store.set("voice", voiceName); speak("Hi! I'm Mochi. Let's learn the abacus together."); };
+
+// ---------- Mochi (white, tan ears + eye patch) and Coco (brown, cream muzzle) ----------
+const PUPS = {
+  mochi: { name: "Mochi", fur: "#FFFDF8", line: "#D9CBB8", ear: "#D49A5E", earLine: "#B07840", muzzle: "#FFFFFF", patch: "#E0AE78" },
+  coco:  { name: "Coco",  fur: "#A65F32", line: "#7A4120", ear: "#8C4A24", earLine: "#6A3518", muzzle: "#F4DCC2", patch: null }
+};
+function poodle(size = 56, who = "mochi", mood = "happy") {
+  const p = PUPS[who];
+  const mouth = mood === "cheer"
+    ? `<path d="M42 66 q8 11 16 0 z" fill="#7A2E3B"/><path d="M46 70 q4 3 8 0" fill="#E87A8C"/>`
+    : `<path d="M43 65 q7 6 14 0" fill="none" stroke="#4A2A18" stroke-width="2.6" stroke-linecap="round"/>`;
+  const puff = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}"/>`;
+  const ears = who === "mochi"
+    ? `<g fill="${p.ear}" stroke="${p.earLine}" stroke-width="1.5"><ellipse cx="22" cy="60" rx="12" ry="21" transform="rotate(14 22 60)"/><ellipse cx="78" cy="60" rx="12" ry="21" transform="rotate(-14 78 60)"/></g>`
+    : `<g fill="${p.ear}" stroke="${p.earLine}" stroke-width="1.5">${puff(20,52,12)}${puff(17,65,12)}${puff(21,78,10)}${puff(80,52,12)}${puff(83,65,12)}${puff(79,78,10)}</g>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" role="img" aria-label="${p.name}">
+    ${ears}
+    <g fill="${p.fur}" stroke="${p.line}" stroke-width="1.5">${puff(36,22,12)}${puff(50,16,13)}${puff(64,22,12)}</g>
+    <ellipse cx="50" cy="56" rx="25" ry="24" fill="${p.fur}" stroke="${p.line}" stroke-width="1.5"/>
+    <g fill="${p.fur}">${puff(41,30,10)}${puff(59,30,10)}${puff(50,28,10)}</g>
+    ${p.patch ? `<ellipse cx="60" cy="49" rx="9" ry="8" fill="${p.patch}"/>` : ""}
+    <ellipse cx="50" cy="65" rx="13" ry="10" fill="${p.muzzle}"/>
+    <circle cx="41" cy="50" r="4.4" fill="#2A1A10"/><circle cx="59" cy="50" r="4.4" fill="#2A1A10"/>
+    <circle cx="42.5" cy="48.5" r="1.5" fill="#fff"/><circle cx="60.5" cy="48.5" r="1.5" fill="#fff"/>
+    <ellipse cx="50" cy="59.5" rx="5" ry="3.6" fill="#3A2216"/>
+    ${mouth}
+    <circle cx="33" cy="61" r="4" fill="#F4A3A8" opacity=".55"/><circle cx="67" cy="61" r="4" fill="#F4A3A8" opacity=".55"/>
+  </svg>`;
+}
+const duo = (size, mood = "happy") => `<span style="display:inline-flex;align-items:flex-end">${poodle(size, "mochi", mood)}<span style="margin-left:-${Math.round(size * .15)}px">${poodle(Math.round(size * .92), "coco", mood)}</span></span>`;
+
+// ---------- abacus ----------
+const ALL_ROD_NAMES = ["Ten-thousands", "Thousands", "Hundreds", "Tens", "Ones"];
+const rodNames = (n = 3) => ALL_ROD_NAMES.slice(5 - n);
+const ROD_NAMES = rodNames(3);
+const toRods = (v, n = 3) => String(Math.max(0, Math.min(10 ** n - 1, v))).padStart(n, "0").split("").map(c => ({ h: +c >= 5 ? 1 : 0, e: +c % 5 }));
+class Abacus {
+  constructor(frame, onChange, n = 3) {
+    this.frame = frame; this.onChange = onChange; this.target = null; this.locked = false;
+    this.holder = frame.querySelector(".rods");
+    this.holder.addEventListener("click", e => {
+      const b = e.target.closest(".bead"); if (!b || this.locked) return;
+      const before = this.rods.map(r => ({ ...r })), ri = +b.dataset.r, r = this.rods[ri];
+      if (b.dataset.kind === "h") r.h = 1 - r.h;
+      else { const j = +b.dataset.j; r.e = j < r.e ? j : j + 1; }
+      sfx.click(); this.render();
+      this.onChange && this.onChange({ user: true, rod: ri, kind: b.dataset.kind, before });
+    });
+    this.setRods(n);
+  }
+  setRods(n) {
+    if (this.n === n && this.rods) return;
+    this.n = n; this.rods = toRods(0, n); this.target = null;
+    const names = rodNames(n);
+    this.holder.innerHTML = "";
+    this.holder.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+    for (let i = 0; i < n; i++) {
+      const rod = document.createElement("div"); rod.className = "rod";
+      const hv = document.createElement("div"); hv.className = "zone heaven";
+      const hb = document.createElement("button"); hb.className = "bead h"; hb.dataset.r = i; hb.dataset.kind = "h";
+      hb.setAttribute("aria-label", `${names[i]} rod, five bead`); hv.appendChild(hb);
+      const beam = document.createElement("div"); beam.className = "beam";
+      if ((n - 1 - i) % 3 === 0) beam.innerHTML = `<span class="dot"></span>`;
+      const ea = document.createElement("div"); ea.className = "zone earth";
+      for (let j = 0; j < 4; j++) {
+        const b = document.createElement("button"); b.className = "bead e"; b.dataset.r = i; b.dataset.kind = "e"; b.dataset.j = j;
+        b.setAttribute("aria-label", `${names[i]} rod, earth bead ${j + 1}`); ea.appendChild(b);
+      }
+      rod.append(hv, beam, ea); this.holder.appendChild(rod);
+    }
+    const pl = this.frame.parentElement.querySelector(".places");
+    if (pl) {
+      pl.style.gridTemplateColumns = `repeat(${n}, minmax(0, 1fr))`;
+      const short = { "Ten-thousands": "10,000s", "Thousands": "1,000s" };
+      pl.innerHTML = names.map(x => `<span>${n > 3 ? (short[x] || x) : x}</span>`).join("");
+    }
+    this.render();
+  }
+  value() { return this.rods.reduce((a, r) => a * 10 + r.h * 5 + r.e, 0); }
+  setValue(v) { this.rods = toRods(v, this.n); this.render(); this.onChange && this.onChange({ user: false }); }
+  highlight(v) { this.target = v == null ? null : toRods(v, this.n); this.render(); }
+  spot(s) { if (s) this.frame.dataset.spot = s; else delete this.frame.dataset.spot; }
+  glowCount() { return this.frame.querySelectorAll(".bead.glow").length; }
+  lock(on) { this.locked = on; this.frame.classList.toggle("locked", on); }
+  render() {
+    this.frame.querySelectorAll(".bead").forEach(b => {
+      const i = +b.dataset.r, r = this.rods[i], t = this.target && this.target[i];
+      let on, glow = false;
+      if (b.dataset.kind === "h") { on = !!r.h; b.style.setProperty("--k", on ? 1 : 0); if (t) glow = t.h !== r.h; }
+      else { const j = +b.dataset.j; on = j < r.e; b.style.setProperty("--k", on ? j : j + 1); if (t) glow = (j < t.e) !== on; }
+      b.classList.toggle("glow", glow);
+      b.setAttribute("aria-pressed", String(on));
+    });
+  }
+}
+
+// ---------- technique: steps and rules ----------
+function canAdd(d, k) { const h = d >= 5, e = d % 5; if (k === 0) return true; if (k < 5) return e + k <= 4; if (k === 5) return !h; return !h && e + (k - 5) <= 4; }
+function canSub(d, k) { const h = d >= 5, e = d % 5; if (k === 0) return true; if (k < 5) return e >= k; if (k === 5) return h; return h && e >= k - 5; }
+function howTo(d) { if (d === 0) return "no beads"; const p = []; if (d >= 5) p.push("the five bead"); if (d % 5) p.push(plural(d % 5, "earth bead")); return p.join(" and "); }
+// Move from one number to another: rod by rod LEFT TO RIGHT, five bead FIRST on each rod.
+function moveSteps(from, to, n = 3) {
+  const steps = []; let cur = from; const names = rodNames(n);
+  names.forEach((name, ri) => {
+    const p = 10 ** (n - 1 - ri);
+    const a = digit(cur, p), b = digit(to, p); if (a === b) return;
+    const hv = (b >= 5) - (a >= 5), ev = b % 5 - a % 5, rod = name + " rod";
+    if (hv) { cur += hv * 5 * p; steps.push(hv > 0
+      ? { value: cur, hand: "index-down", tag: "+5 · Index finger", caption: `${rod}: add 5. Use your index finger to bring the five bead down.` }
+      : { value: cur, hand: "index-up", tag: "−5 · Index finger", caption: `${rod}: take away 5. Use your index finger to lift the five bead up.` }); }
+    if (ev) { const k = Math.abs(ev); cur += ev * p; steps.push(ev > 0
+      ? { value: cur, hand: "thumb-up", tag: `+${k} · Thumb`, caption: `${rod}: add ${k}. Use your thumb to push ${plural(k, "earth bead")} up.` }
+      : { value: cur, hand: "index-down", tag: `−${k} · Index finger`, caption: `${rod}: take away ${k}. Use your index finger to pull ${plural(k, "earth bead")} down.` }); }
+  });
+  return steps;
+}
+const say = (caption, spot) => ({ say: true, caption, spot });
+// A "together" move on one rod: two bead groups move in one motion.
+function together(value, kind, f, rod = "Ones rod") {
+  return kind === "down"
+    ? { value, together: true, first: "h", hand: "index-down", tag: `+5 −${f} · Index finger, five first`,
+        caption: `${rod}: add 5 and take away ${f}. Five bead first: your index finger brings the five bead down, then right away pulls ${plural(f, "earth bead")} down, in one smooth motion.` }
+    : { value, together: true, first: "e", hand: "pinch-up", tag: `+${f} −5 · Thumb first, then index finger`,
+        caption: `${rod}: add ${f} and take away 5. Earth beads first: your thumb pushes ${plural(f, "earth bead")} up, then right away your index finger lifts the five bead.` };
+}
+// Plan the soroban moves for cur ± term, digit by digit, left to right, using the 34 rules.
+function planOp(cur, sign, term, n) {
+  const names = rodNames(n), steps = [];
+  const rodOf = p => names[n - 1 - Math.round(Math.log10(p))] + " rod";
+  const push = arr => { arr.forEach(x => steps.push(x)); if (arr.length) cur = arr[arr.length - 1].value; };
+  const addAt = (p, k) => {
+    const d = digit(cur, p);
+    if (d + k <= 9) { canAdd(d, k) ? push(moveSteps(cur, cur + k * p, n)) : push([together(cur + k * p, "down", 5 - k, rodOf(p))]); return; }
+    const c = 10 - k;                                  // big friend: take away c here, carry 10 to the left
+    canSub(d, c) ? push(moveSteps(cur, cur - c * p, n)) : push([together(cur - c * p, "up", k - 5, rodOf(p))]);
+    addAt(p * 10, 1);
+  };
+  const subAt = (p, k) => {
+    const d = digit(cur, p);
+    if (d >= k) { canSub(d, k) ? push(moveSteps(cur, cur - k * p, n)) : push([together(cur - k * p, "up", 5 - k, rodOf(p))]); return; }
+    subAt(p * 10, 1);                                  // big friend: borrow 10 from the left first
+    const c = 10 - k, d2 = digit(cur, p);
+    canAdd(d2, c) ? push(moveSteps(cur, cur + c * p, n)) : push([together(cur + c * p, "down", 5 - c, rodOf(p))]);
+  };
+  const len = String(term).length;
+  for (let q = len - 1; q >= 0; q--) { const p = 10 ** q, k = digit(term, p); if (k) (sign === "+" ? addAt : subAt)(p, k); }
+  return steps;
+}
+const withPart = (steps, part) => steps.map(x => ({ ...x, part }));
+const isAre = k => (k === 1 ? "is" : "are");
+// The 34 rules. digits = ones digits that FORCE the rule; tens = range for the tens digit.
+const RULE_KINDS = {
+  sfAdd: { op: "+", ns: [1, 2, 3, 4], tens: [0, 3], digits: { 1: [4], 2: [3, 4], 3: [2, 3, 4], 4: [1, 2, 3, 4] },
+    formula: n => ["+5", "−" + (5 - n)],
+    steps: (s, n) => [{ ...together(s + n, "down", 5 - n), part: [0, 1] }],
+    why: (s, n) => { const free = 4 - s % 5; return [`${s} + ${n}. We need to add ${n}, but only ${plural(free, "earth bead")} ${isAre(free)} free.`, `So we use ${n}'s small friend, ${5 - n}. Add 5 first, then take away ${5 - n}.`]; },
+    heading: n => `Adding ${n} with a small friend`,
+    friends: n => `${n} and ${5 - n} are small friends: together they make 5.`,
+    explain: n => `When there aren't enough earth beads to add ${n}, add 5 and take away ${5 - n}. Five bead first: bring the five bead down with your index finger, then right away pull ${plural(5 - n, "earth bead")} down.` },
+  sfSub: { op: "−", ns: [1, 2, 3, 4], tens: [0, 3], digits: { 1: [5], 2: [5, 6], 3: [5, 6, 7], 4: [5, 6, 7, 8] },
+    formula: n => ["+" + (5 - n), "−5"],
+    steps: (s, n) => [{ ...together(s - n, "up", 5 - n), part: [0, 1] }],
+    why: (s, n) => { const e = s % 5; return [`${s} − ${n}. We need to take away ${n}, but ${e ? `there ${isAre(e)} only ${plural(e, "earth bead")} on the beam` : "there are no earth beads on the beam"}.`, `So we use ${n}'s small friend, ${5 - n}. Add ${5 - n} first, then take away 5.`]; },
+    heading: n => `Taking away ${n} with a small friend`,
+    friends: n => `${n} and ${5 - n} are small friends: together they make 5.`,
+    explain: n => `When there aren't enough earth beads to take away ${n}, add ${5 - n} and take away 5. Earth beads first: push ${plural(5 - n, "earth bead")} up with your thumb, then right away lift the five bead with your index finger.` },
+  bfAdd: { op: "+", ns: [1, 2, 3, 4, 5, 6, 7, 8, 9], tens: [0, 3],
+    digits: { 1: [9], 2: [8, 9], 3: [7, 8, 9], 4: [6, 7, 8, 9], 5: [5, 6, 7, 8, 9], 6: [4, 9], 7: [3, 4, 8, 9], 8: [2, 3, 4, 7, 8, 9], 9: [1, 2, 3, 4, 6, 7, 8, 9] },
+    formula: n => ["−" + (10 - n), "+10"],
+    steps: (s, n) => { const c = 10 - n; return [...withPart(moveSteps(s, s - c), 0), ...withPart(moveSteps(s - c, s - c + 10), 1)]; },
+    why: (s, n) => [`${s} + ${n}. The ones rod would go past 9, so it can't hold the answer.`, `${n}'s big friend is ${10 - n}. Take away ${10 - n} on the ones rod, then add 10 on the tens rod.`],
+    heading: n => `Adding ${n} with a big friend`,
+    friends: n => `${n} and ${10 - n} are big friends: together they make 10.`,
+    explain: n => `When adding ${n} would go past 9, use ${n}'s big friend, ${10 - n}. Take away ${10 - n} on this rod first, then add 1 bead on the tens rod. That one bead is worth 10.` },
+  bfSub: { op: "−", ns: [1, 2, 3, 4, 5, 6, 7, 8, 9], tens: [1, 4],
+    digits: { 1: [0], 2: [0, 1], 3: [0, 1, 2], 4: [0, 1, 2, 3], 5: [0, 1, 2, 3, 4], 6: [0, 5], 7: [0, 1, 5, 6], 8: [0, 1, 2, 5, 6, 7], 9: [0, 1, 2, 3, 5, 6, 7, 8] },
+    formula: n => ["−10", "+" + (10 - n)],
+    steps: (s, n) => [...withPart(moveSteps(s, s - 10), 0), ...withPart(moveSteps(s - 10, s - n), 1)],
+    why: (s, n) => [`${s} − ${n}. The ones rod only has ${s % 10}, so we can't take away ${n} there.`, `${n}'s big friend is ${10 - n}. Take away 10 on the tens rod, then add ${10 - n} on the ones rod.`],
+    heading: n => `Taking away ${n} with a big friend`,
+    friends: n => `${n} and ${10 - n} are big friends: together they make 10.`,
+    explain: n => `When the ones rod doesn't have enough to take away ${n}, take 1 bead off the tens rod (that's 10), then add ${n}'s big friend, ${10 - n}, on the ones rod.` },
+  mxAdd: { op: "+", ns: [6, 7, 8, 9], tens: [0, 3], digits: { 6: [5, 6, 7, 8], 7: [5, 6, 7], 8: [5, 6], 9: [5] },
+    formula: n => ["+" + (n - 5), "−5", "+10"],
+    steps: (s, n) => { const m = n - 5, mid = s + m - 5; return [{ ...together(mid, "up", m), part: [0, 1] }, ...withPart(moveSteps(mid, mid + 10), 2)]; },
+    why: (s, n) => [`${s} + ${n}. That needs a big friend: take away ${10 - n}, then add 10.`, `But we can't take away ${10 - n} directly. So add ${n - 5} first, then take away 5, then add 10 on the tens rod.`],
+    heading: n => `Adding ${n} with mixed friends`,
+    friends: n => `${n}'s big friend is ${10 - n}, and ${10 - n}'s small friend is ${n - 5}.`,
+    explain: n => `Big friend first: +${n} = −${10 - n} +10. But taking away ${10 - n} needs a small friend: −${10 - n} = +${n - 5} −5. So push ${plural(n - 5, "earth bead")} up with your thumb, then right away lift the five bead, then add 10 on the tens rod.` },
+  mxSub: { op: "−", ns: [6, 7, 8, 9], tens: [1, 4], digits: { 6: [1, 2, 3, 4], 7: [2, 3, 4], 8: [3, 4], 9: [4] },
+    formula: n => ["−10", "+5", "−" + (n - 5)],
+    steps: (s, n) => [...withPart(moveSteps(s, s - 10), 0), { ...together(s - n, "down", n - 5), part: [1, 2] }],
+    why: (s, n) => [`${s} − ${n}. Not enough on the ones rod, so we need a big friend: take away 10, then add ${10 - n}.`, `But we can't add ${10 - n} directly. So add 5 and take away ${n - 5} together.`],
+    heading: n => `Taking away ${n} with mixed friends`,
+    friends: n => `${n}'s big friend is ${10 - n}, and ${10 - n}'s small friend is ${n - 5}.`,
+    explain: n => `Big friend first: −${n} = −10 +${10 - n}. But adding ${10 - n} needs a small friend: +${10 - n} = +5 −${n - 5}. So take away 10 on the tens rod, then add 5 and take away ${n - 5} at the same time.` }
+};
+const RULE_UNITS = [
+  { id: 1, kind: "sfAdd", name: "Small Friends: Adding", blurb: "Friends that make 5: 1 and 4, 2 and 3. Rules 1–4." },
+  { id: 2, kind: "sfSub", name: "Small Friends: Taking Away", blurb: "Take away with friends of 5. Rules 5–8." },
+  { id: 3, kind: "bfAdd", name: "Big Friends: Adding", blurb: "Friends that make 10: 1 and 9, 2 and 8, 3 and 7, 4 and 6, 5 and 5. Rules 9–17." },
+  { id: 4, kind: "bfSub", name: "Big Friends: Taking Away", blurb: "Borrow 10 from the tens rod. Rules 18–26." },
+  { id: 5, kind: "mxAdd", name: "Mixed Friends: Adding", blurb: "A big friend and a small friend in one problem. Rules 27–30." },
+  { id: 6, kind: "mxSub", name: "Mixed Friends: Taking Away", blurb: "Borrow 10, then use a small friend. Rules 31–34." }
+];
+function buildRuleLessons() {
+  let no = 0;
+  return RULE_UNITS.flatMap(u => {
+    const K = RULE_KINDS[u.kind];
+    return K.ns.map((n, k) => {
+      no++;
+      const list = K.digits[n], parts = K.formula(n), sign = K.op, ruleNo = no;
+      const exS = K.tens[0] * 10 + list[0];
+      const tryS = (K.tens[0] + 1) * 10 + list[list.length - 1];
+      const ans = x => sign === "+" ? x + n : x - n;
+      return {
+        id: `${u.id}-${k + 1}`, num: `${u.id}.${k + 1}`, unit: u.id,
+        title: `Rule ${ruleNo}: ${sign}${n}`, sub: `${sign}${n} = ${parts.join(" ")}`,
+        formula: { lhs: sign + n, parts },
+        heading: K.heading(n), friends: K.friends(n), explain: K.explain(n),
+        hello: `Rule ${ruleNo} of 34. Let's learn ${sign}${n}!`,
+        watch: { start: exS, eq: `${exS} ${sign} ${n}`, steps: [...K.why(exS, n).map(t => say(t)), ...K.steps(exS, n)] },
+        tryIt: { start: tryS, eq: `${tryS} ${sign} ${n}`, steps: K.steps(tryS, n) },
+        gen: () => fresh(() => {
+          const s0 = rnd(K.tens[0], K.tens[1]) * 10 + pick(list);
+          return { start: s0, target: ans(s0), prompt: `${s0} ${sign} <b>${n}</b> = ?`, hint: `Use rule ${ruleNo}: ${sign}${n} = ${parts.join(" ")}.`, steps: K.steps(s0, n) };
+        })
+      };
+    });
+  });
+}
+
+// ---------- curriculum ----------
+const ALL_UNLOCKED = true; // every lesson is open
+const UNITS = [
+  { id: 0, tag: "Unit 0", name: "Meet the Abacus", blurb: "The parts of the soroban, how to read it, and which finger adds and takes away." },
+  ...RULE_UNITS.map(u => ({ id: u.id, tag: "Unit " + u.id, name: u.name, blurb: u.blurb }))
+];
+let lastKey = null;
+function fresh(fn) { for (let i = 0; i < 25; i++) { const p = fn(); const k = p.start + ":" + p.target; if (k !== lastKey) { lastKey = k; return p; } } return fn(); }
+function genDirect(op) {
+  for (let t = 0; t < 600; t++) {
+    const small = Math.random() < .4;
+    const s = small ? rnd(1, 9) : rnd(10, 98), n = small ? rnd(1, 9) : rnd(1, 89);
+    if (op === "+") { if (s + n <= 99 && canAdd(s % 10, n % 10) && canAdd(digit(s, 10), digit(n, 10))) return { s, n }; }
+    else { if (n < s && canSub(s % 10, n % 10) && canSub(digit(s, 10), digit(n, 10))) return { s, n }; }
+  }
+  return op === "+" ? { s: 2, n: 2 } : { s: 4, n: 3 };
+}
+const ic = {
+  five: `<svg width="30" height="24" viewBox="0 0 30 24"><rect x="0" y="17" width="30" height="5" rx="1" fill="var(--beam)"/><path d="M3 9L9 2H21L27 9L21 16H9Z" fill="var(--bead)"/><path d="M9 2H21L24 5.5H6Z" fill="var(--bead-hi)"/></svg>`,
+  earth: `<svg width="30" height="24" viewBox="0 0 30 24"><rect x="0" y="2" width="30" height="5" rx="1" fill="var(--beam)"/><path d="M3 15L9 8H21L27 15L21 22H9Z" fill="var(--bead)"/><path d="M9 8H21L24 11.5H6Z" fill="var(--bead-hi)"/></svg>`,
+  beam: `<svg width="30" height="24" viewBox="0 0 30 24"><rect x="0" y="9" width="30" height="6" rx="1" fill="var(--beam)"/></svg>`,
+  dot: `<svg width="30" height="24" viewBox="0 0 30 24"><rect x="0" y="9" width="30" height="6" rx="1" fill="var(--beam)"/><circle cx="15" cy="12" r="2.6" fill="var(--dot)" stroke="var(--gold)" stroke-width="1.2"/></svg>`,
+  arrow: `<svg width="26" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>`,
+  thumb: `<svg width="26" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-lo)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V6M7 11l5-5 5 5"/></svg>`,
+  index: `<svg width="26" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-lo)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M7 13l5 5 5-5"/></svg>`
+};
+
+const LESSONS = [
+  { id: "0-1", unit: 0, title: "Meet the soroban", sub: "Parts, beads and reading left to right",
+    heading: "This is a soroban, a Japanese abacus",
+    facts: [
+      [ic.beam, "<b>Beam:</b> the bar across the middle. A bead only counts when it touches the beam."],
+      [ic.five, "<b>Five bead:</b> the one bead above the beam. It's worth <b>5</b>."],
+      [ic.earth, "<b>Earth beads:</b> the four beads below the beam. Each is worth <b>1</b>."],
+      [ic.dot, "<b>Ones rod:</b> the rod with the dot. Tens and hundreds are to its left."],
+      [ic.arrow, "<b>Left to right:</b> read and work from the left rod to the right, like reading a book."]
+    ],
+    hello: "Hi, I'm Mochi! Let's meet the soroban before we do any math.",
+    watch: { start: 0, steps: [
+      say("Every up-and-down rod holds one digit. This soroban has three rods: hundreds, tens and ones.", "rods"),
+      say("The bar across the middle is the beam. Beads only count when they touch it. Right now it shows 0.", "beam"),
+      say("Above the beam is the five bead. It's worth 5.", "heaven"),
+      say("Below the beam are four earth beads. Each one is worth 1.", "earth"),
+      say("The rod with the dot is the ones rod. We read left to right: hundreds, tens, ones.", "ones"),
+      { value: 1, hand: "thumb-up", tag: "+1 · Thumb", caption: "Use your thumb to push one earth bead up to the beam. That adds 1, so now it shows 1." },
+      { value: 6, hand: "index-down", tag: "+5 · Index finger", caption: "Use your index finger to bring the five bead down. That adds 5. Five and one make 6." }
+    ] },
+    tryIt: { start: 0, eq: "2 + 5", steps: [
+      { value: 2, hand: "thumb-up", tag: "+2 · Thumb", caption: "Use your thumb to push 2 earth beads up to show 2." },
+      { value: 7, hand: "index-down", tag: "+5 · Index finger", caption: "Use your index finger to bring the five bead down. Now it shows 7." } ] },
+    gen: () => fresh(() => { const n = rnd(1, 9); return { start: 0, target: n, prompt: `Show <b>${n}</b> on the ones rod.`, hint: `${n} is ${howTo(n)}.`, steps: moveSteps(0, n) }; })
+  },
+  { id: "0-2", unit: 0, title: "Thumb and index finger", sub: "Which finger adds and takes away",
+    heading: "Two fingers, add and take away",
+    facts: [
+      [ic.thumb, "<b>Thumb</b> pushes earth beads <b>up</b>. That's adding."],
+      [ic.index, "<b>Index finger</b> pulls earth beads <b>down</b>. That's taking away."],
+      [ic.five, "<b>Index finger</b> moves the five bead: <b>down adds 5</b>, <b>up takes away 5</b>."],
+      [ic.arrow, "For 6, 7, 8 and 9: move the <b>five bead first</b>, then the earth beads."]
+    ],
+    hello: "Every move is adding or taking away, and each one has its own finger. Watch the hand!",
+    watch: { start: 0, steps: [say("0 + 3. Adding earth beads is a job for your thumb."), ...moveSteps(0, 3),
+      say("3 − 2. Taking away earth beads is a job for your index finger."), ...moveSteps(3, 1),
+      say("1 + 7. Adding 7 means the five bead and 2 earth beads. Five bead first!"), ...moveSteps(1, 8)] },
+    tryIt: { start: 2, eq: "2 + 2 + 5 − 8", steps: [...moveSteps(2, 4), ...moveSteps(4, 9), ...moveSteps(9, 1)] },
+    gen: () => fresh(() => {
+      // basic one-digit adding and taking away, only moves that need no rules
+      for (let t = 0; t < 200; t++) {
+        const add = Math.random() < .5, a = rnd(0, 9), n = rnd(1, 9);
+        if (add && a + n <= 9 && canAdd(a, n)) return { start: a, target: a + n, prompt: `${a} + <b>${n}</b> = ?`, hint: moveSteps(a, a + n).map(x => x.tag).join(", then ") + ".", steps: moveSteps(a, a + n) };
+        if (!add && n < a && canSub(a, n)) return { start: a, target: a - n, prompt: `${a} − <b>${n}</b> = ?`, hint: moveSteps(a, a - n).map(x => x.tag).join(", then ") + ".", steps: moveSteps(a, a - n) };
+      }
+      return { start: 2, target: 4, prompt: "2 + <b>2</b> = ?", hint: "+2 · Thumb.", steps: moveSteps(2, 4) };
+    })
+  },
+  { id: "0-3", unit: 0, title: "Bigger numbers", sub: "One digit per rod, left to right",
+    heading: "Each rod holds one digit",
+    facts: [
+      [ic.dot, "The <b>ones rod</b> has the dot. The <b>tens rod</b> is just to its left."],
+      [ic.arrow, "Set numbers <b>left to right</b>: tens first, then ones."],
+      [ic.five, "On every rod, move the <b>five bead first</b>, then the earth beads."]
+    ],
+    hello: "Now let's use more than one rod!",
+    watch: { start: 0, steps: [say("Let's show 46. Tens rod first, then the ones rod."), ...moveSteps(0, 46)] },
+    tryIt: { start: 0, eq: "Show 58", steps: moveSteps(0, 58) },
+    gen: () => fresh(() => { const n = rnd(10, 99); return { start: 0, target: n, prompt: `Show <b>${n}</b>.`, hint: `Tens rod first: ${digit(n, 10)}. Then the ones rod: ${n % 10}.`, steps: moveSteps(0, n) }; })
+  },
+  { id: "0-4", unit: 0, title: "Adding", sub: "Push in free beads, left to right",
+    heading: "When the beads are free, push them in",
+    facts: [
+      [ic.arrow, "Add the <b>left digit first</b>, then move right. Even 23 + 16 starts with the tens."],
+      [ic.thumb, "Adding earth beads? Push them up with your <b>thumb</b>."],
+      [ic.five, "Adding 6 to 9? <b>Five bead first</b> with your index finger, then earth beads with your thumb."]
+    ],
+    hello: "Time to add! Remember, start on the left.",
+    watch: { start: 23, eq: "23 + 16", steps: [say("23 + 16. Start on the left: add 1 on the tens rod, then 6 on the ones rod."), ...moveSteps(23, 39)] },
+    tryIt: { start: 52, eq: "52 + 26", steps: moveSteps(52, 78) },
+    gen: () => fresh(() => { const { s, n } = genDirect("+"); return { start: s, target: s + n, prompt: `${s} + <b>${n}</b> = ?`, hint: "Start with the left rod. Five bead first (index finger), then earth beads (thumb).", steps: moveSteps(s, s + n) }; })
+  },
+  { id: "0-5", unit: 0, title: "Taking away", sub: "Move beads away from the beam",
+    heading: "Taking away moves beads off the beam",
+    facts: [
+      [ic.arrow, "Take away <b>left to right</b>, just like adding."],
+      [ic.index, "Taking away earth beads? Pull them down with your <b>index finger</b>."],
+      [ic.five, "Taking away 6 to 9? Lift the <b>five bead first</b>, then pull the earth beads down. All with your index finger."]
+    ],
+    hello: "Now we take away. It's adding in reverse!",
+    watch: { start: 27, eq: "27 − 15", steps: [say("27 − 15. Start on the left: take away 1 on the tens rod, then 5 on the ones rod."), ...moveSteps(27, 12)] },
+    tryIt: { start: 9, eq: "9 − 6", steps: moveSteps(9, 3) },
+    gen: () => fresh(() => { const { s, n } = genDirect("-"); return { start: s, target: s - n, prompt: `${s} − <b>${n}</b> = ?`, hint: "Start with the left rod. Your index finger does all the taking away.", steps: moveSteps(s, s - n) }; })
+  },
+  ...buildRuleLessons()
+];
+const lessonIndex = id => LESSONS.findIndex(l => l.id === id);
+
+// ---------- progress ----------
+let progress = store.get("progress2", {});
+const starsOf = id => progress[id] || 0;
+const unlocked = i => ALL_UNLOCKED || i === 0 || starsOf(LESSONS[i - 1].id) > 0;
+const starHTML = (n, cls = "stars") => `<span class="${cls}" aria-label="${n} of 3 stars">${[0, 1, 2].map(i => `<span class="st ${i < n ? "on" : ""}">★</span>`).join("")}</span>`;
+
+// ---------- views ----------
+function show(view) {
+  ["mapView", "lessonView", "playView", "practiceView"].forEach(v => $(v).hidden = v !== view);
+  playToken++; stopSpeech(); clearInterval(swInt);
+  window.scrollTo(0, 0);
+}
+function renderMap() {
+  $("heroPups").innerHTML = duo(92);
+  const next = LESSONS.findIndex((l, i) => unlocked(i) && !starsOf(l.id));
+  $("continueBtn").textContent = Object.keys(progress).length ? "Continue" : "Start learning";
+  $("continueBtn").onclick = () => openLesson(next === -1 ? 0 : next);
+  $("units").innerHTML = UNITS.map(u => `
+    <div class="unit">
+      <div class="unit-head"><span class="tag">${u.tag}</span><h2>${u.name}</h2></div>
+      <p class="blurb">${u.blurb}</p>
+      <div class="lessons">${LESSONS.map((l, i) => l.unit !== u.id ? "" : `
+        <button class="lrow ${unlocked(i) ? "" : "locked"} ${i === next ? "next" : ""}" data-i="${i}" ${unlocked(i) ? "" : 'aria-disabled="true"'}>
+          <span class="num">${unlocked(i) ? (l.num || l.id.replace("-", ".")) : ICON.lock}</span>
+          <span><span class="t">${l.title}</span><br><span class="s">${l.sub}</span></span>
+          ${starHTML(starsOf(l.id))}
+        </button>`).join("")}</div>
+    </div>`).join("");
+}
+$("units").addEventListener("click", e => {
+  const b = e.target.closest(".lrow"); if (!b) return;
+  const i = +b.dataset.i; if (!unlocked(i)) { sfx.oops(); return; } openLesson(i);
+});
+
+// ---------- lesson engine ----------
+const STEPS = [["rule", "Learn the rule"], ["watch", "Watch Mochi"], ["try", "Try with Coco"], ["practice", "Practice"]];
+let L = null, step = "rule", reached = 0, playToken = 0, slow = false, tryState = null, prac = null;
+const coach = $("coach");
+const lessonAb = new Abacus($("lessonFrame"), ev => onLessonChange(ev));
+const playAb = new Abacus($("playFrame"), () => showNum($("playNum"), playAb.value(), $("playHide").checked));
+function showNum(el, v, hide) {
+  const t = hide ? "?" : String(v);
+  if (el.textContent !== t) { el.textContent = t; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+}
+$("lessonHide").onchange = () => showNum($("lessonNum"), lessonAb.value(), $("lessonHide").checked);
+$("playHide").onchange = () => showNum($("playNum"), playAb.value(), $("playHide").checked);
+$("playClear").onclick = () => playAb.setValue(0);
+
+function openLesson(i) {
+  L = LESSONS[i]; reached = 0; show("lessonView"); lessonMode(true); lessonAb.setRods(3);
+  $("lessonTag").textContent = `${UNITS[L.unit].tag} · Lesson ${L.num || L.id.replace("-", ".")}`;
+  $("lessonTitle").textContent = L.title;
+  go("rule");
+}
+function renderStepper() {
+  $("stepper").innerHTML = STEPS.map(([k, label], i) =>
+    `<button class="${k === step ? "cur" : ""} ${i < reached && k !== step ? "done" : ""}" data-k="${k}" ${i > reached ? "disabled" : ""}><span class="k">${i < reached && k !== step ? "✓" : i + 1}</span>${label}</button>`).join("");
+}
+$("stepper").addEventListener("click", e => { const b = e.target.closest("button"); if (b && !b.disabled) go(b.dataset.k); });
+function talk(text, who = "mochi", mood) {
+  return `<div class="talk">${poodle(56, who, mood)}<div class="bubble"><span class="who">${PUPS[who].name}</span><span class="say" id="say">${text}</span></div></div>`;
+}
+function setSay(t) { const s = $("say"); if (s) s.textContent = t; }
+function formulaHTML() {
+  if (!L.formula) return "";
+  return `<div class="formula" aria-label="${L.formula.lhs} equals ${L.formula.parts.join(" ")}"><span class="part lhs">${L.formula.lhs}</span><span class="eq">=</span>${L.formula.parts.map((p, i) => `<span class="part" data-p="${i}">${p}</span>`).join("")}</div>`;
+}
+function lightParts(part) {
+  const on = part == null ? [] : [].concat(part);
+  coach.querySelectorAll(".formula .part[data-p]").forEach(p => p.classList.toggle("lit", on.includes(+p.dataset.p)));
+}
+const HAND_LABEL = { "thumb-up": "Thumb pushes up", "index-down": "Index finger pulls down", "index-up": "Index finger lifts up", "pinch-up": "Thumb pushes up, then index lifts the five" };
+function setHand(act) {
+  const c = $("handCard"); if (!c) return;
+  c.dataset.act = act || "";
+  $("handLabel").textContent = act ? HAND_LABEL[act] : "Watch which finger moves.";
+}
+const eqHTML = (part, id) => part.eq ? `<div class="prompt eq" id="${id}">${part.eq}${part.eq.startsWith("Show") ? "" : " = ?"}</div>` : "";
+function solveEq(id, part, v) { const e = $(id); if (e && part.eq && !part.eq.startsWith("Show")) e.innerHTML = `${part.eq} = <b class="solved">${v}</b>`; }
+function pointAt(hand, mode) {
+  const p = $("pointer"); if (!p) return;
+  if (!hand) { p.classList.remove("on", "hover"); return; }
+  const glows = [...$("lessonFrame").querySelectorAll(".bead.glow")];
+  if (!glows.length) { p.classList.remove("on", "hover"); return; }
+  let el, edge;
+  if (hand === "thumb-up") { el = glows.filter(b => b.classList.contains("e")).pop() || glows[glows.length - 1]; edge = "bottom"; }
+  else if (hand === "pinch-up") { el = glows.filter(b => b.classList.contains("e")).pop() || glows[glows.length - 1]; edge = "bottom"; }
+  else if (hand === "index-up") { el = glows.find(b => b.classList.contains("h")) || glows[0]; edge = "bottom"; }
+  else { el = glows[0]; edge = "top"; }
+  const col = $("abacusCol").getBoundingClientRect(), r = el.getBoundingClientRect();
+  const fresh = !p.classList.contains("on");
+  if (fresh) p.style.transition = "none";   // first appearance: start right at the bead, no glide from the corner
+  p.style.setProperty("--x", (r.left + r.width / 2 - col.left) + "px");
+  p.style.setProperty("--y", ((edge === "top" ? r.top : r.bottom) - col.top) + "px");
+  if (fresh) { void p.offsetWidth; p.style.transition = ""; }
+  p.querySelector(".plabel").textContent = hand === "thumb-up" ? "Thumb" : hand === "pinch-up" ? "Thumb, then index" : "Index";
+  p.classList.add("on"); p.classList.toggle("hover", mode === "hover");
+}
+async function pressPointer() { const t = $("pointer").querySelector(".tip"); t.classList.remove("press"); void t.offsetWidth; t.classList.add("press"); await wait(260); }
+function cheer() {
+  const sv = coach.querySelector(".talk > svg"); if (sv) { sv.classList.remove("jump"); void sv.getBoundingClientRect(); sv.classList.add("jump"); }
+  const f = $("lessonFrame"); f.classList.remove("win"); void f.offsetWidth; f.classList.add("win");
+}
+const fingerTag = s => s.tag ? `<span class="finger">${s.tag}</span>` : "";
+
+function go(k) {
+  playToken++; stopSpeech(); step = k;
+  reached = Math.max(reached, STEPS.findIndex(s => s[0] === k));
+  lessonAb.highlight(null); lessonAb.lock(false); lessonAb.spot(null); setHand(null); pointAt(null);
+  renderStepper();
+  ({ rule: renderRule, watch: renderWatch, try: renderTry, practice: startPractice })[k]();
+}
+
+// 1. LEARN THE RULE
+function renderRule() {
+  coach.innerHTML = `
+    ${talk(L.hello)}
+    <h2>${L.heading}</h2>
+    ${formulaHTML()}
+    ${L.friends ? `<div class="friends">${L.friends}</div>` : ""}
+    ${L.facts ? `<ul class="facts">${L.facts.map(([i, t]) => `<li><span class="ic">${i}</span><span>${t}</span></li>`).join("")}</ul>` : ""}
+    ${L.explain ? `<p class="explain">${L.explain}</p>` : ""}
+    <div class="row"><button class="btn" id="readBtn">${ICON.speak}Read to me</button><span class="spacer"></span><button class="btn go" id="toWatch">${ICON.play}Watch Mochi</button></div>`;
+  $("readBtn").onclick = () => {
+    const tmp = document.createElement("div"); tmp.innerHTML = (L.facts || []).map(f => f[1]).join(". ");
+    speak([L.hello, L.heading, L.formula ? `${L.formula.lhs} equals ${L.formula.parts.join(" ")}` : "", L.friends || "", tmp.textContent, L.explain || ""].filter(Boolean).join(". "));
+  };
+  $("toWatch").onclick = () => go("watch");
+  lessonAb.setValue(L.watch.start);
+}
+
+// 2. WATCH MOCHI
+function renderWatch() {
+  coach.innerHTML = `
+    ${talk("Watch the beads and the hand. I'll show you which finger makes each move.")}
+    ${eqHTML(L.watch, "watchEq")}
+    ${formulaHTML()}
+    <div class="caption" id="caption"><span>Starting at ${L.watch.start}.</span></div>
+    <div class="row">
+      <button class="btn" id="replay">${ICON.replay}Replay</button>
+      <label class="toggle"><input type="checkbox" id="slowBox" ${slow ? "checked" : ""}> Slow motion</label>
+      <span class="spacer"></span>
+      <button class="btn" id="skipWatch">Skip</button>
+      <button class="btn go" id="toTry" ${reached >= 2 ? "" : "disabled"}>Try with Coco</button>
+    </div>`;
+  $("replay").onclick = runWatch;
+  $("slowBox").onchange = e => { slow = e.target.checked; };
+  $("toTry").onclick = () => go("try");
+  $("skipWatch").onclick = () => { reached = Math.max(reached, 2); go("try"); };
+  runWatch();
+}
+async function playSteps(start, steps, onStep) {
+  const tok = ++playToken, sp = () => slow ? 1.8 : 1;
+  lessonAb.lock(true); lessonAb.highlight(null); lessonAb.spot(null); lessonAb.setValue(start);
+  await wait(700 * sp());
+  // talk = narrate the caption and wait until it has finished (or a reading-time pause when sound is off)
+  const talkFor = (text, min) => Promise.all([muted ? wait(Math.max(min, text.length * 55) * sp()) : speak(text), wait(min * sp())]);
+  for (let i = 0; i < steps.length; i++) {
+    if (tok !== playToken) return false;
+    const s = steps[i]; onStep && onStep(s);
+    setHand(s.say ? null : s.hand);
+    if (s.say) { pointAt(null); lessonAb.spot(s.spot || null); await talkFor(s.caption, 2200); if (tok !== playToken) return false; await wait(350 * sp()); lessonAb.spot(null); continue; }
+    lessonAb.highlight(s.value); pointAt(s.hand, "move");
+    await talkFor(s.caption, 1300); if (tok !== playToken) return false;
+    await pressPointer(); if (tok !== playToken) return false;
+    lessonAb.setValue(s.value); sfx.click(); lessonAb.highlight(null);
+    await wait(1000 * sp());
+  }
+  if (tok !== playToken) return false;
+  lessonAb.lock(false); setHand(null); pointAt(null);
+  return true;
+}
+async function runWatch() {
+  const ok = await playSteps(L.watch.start, L.watch.steps, s => {
+    const c = $("caption"); if (c) c.innerHTML = `${fingerTag(s)}<span>${s.caption}</span>`;
+    lightParts(s.part);
+  });
+  if (ok && step === "watch") { solveEq("watchEq", L.watch, lessonAb.value()); cheer(); lightParts(null); $("toTry").disabled = false; setSay("Got it? Now try it with Coco."); }
+}
+
+// 3. TRY WITH COCO
+function renderTry() {
+  tryState = { k: 0, dist: 0 };
+  coach.innerHTML = `
+    ${talk("Let's do it together! Tap the gold beads, using the finger the hand shows.", "coco")}
+    ${eqHTML(L.tryIt, "tryEq")}
+    ${formulaHTML()}
+    <div class="msg" id="tryMsg">The board shows ${L.tryIt.start}.</div>
+    <ol class="checklist" id="checklist"></ol>
+    <div class="row"><button class="btn" id="tryReset">${ICON.replay}Start over</button><span class="spacer"></span><button class="btn go" id="toPractice" disabled>Practice</button></div>`;
+  $("tryReset").onclick = renderTry;
+  $("toPractice").onclick = () => go("practice");
+  lessonAb.setValue(L.tryIt.start);
+  updateTry();
+}
+function updateTry() {
+  const steps = L.tryIt.steps;
+  $("checklist").innerHTML = steps.map((s, i) => `<li class="${i < tryState.k ? "done" : i === tryState.k ? "cur" : ""}"><span class="box">${i < tryState.k ? "✓" : ""}</span><span class="txt">${fingerTag(s)}<span>${s.caption}</span></span></li>`).join("");
+  if (tryState.k < steps.length) { const st = steps[tryState.k]; lessonAb.highlight(st.value); tryState.dist = lessonAb.glowCount(); lightParts(st.part); setHand(st.hand); setTimeout(() => { if (step === "try" && L.tryIt.steps[tryState.k] === st) pointAt(st.hand, "hover"); }, 340); }
+  else { lessonAb.highlight(null); lightParts(null); setHand(null); pointAt(null); }
+}
+// Coaching after a wrong move: left to right, five bead first, and the exact motion to use.
+const rodsValue = rods => rods.reduce((a, r) => a * 10 + r.h * 5 + r.e, 0);
+function beadDist(a, b, n = lessonAb.n) { const A = toRods(a, n), B = toRods(b, n); return A.reduce((t, r, i) => t + Math.abs(r.h - B[i].h) + Math.abs(r.e - B[i].e), 0); }
+const motion = st => st.tag ? `${st.tag.replace(" · ", " with your ").replace("with your Thumb", "with your thumb").replace("with your Index", "with your index")}.` : "";
+function moveFeedback(ev, goalStep) {
+  const n = lessonAb.n, names = rodNames(n), t = toRods(goalStep.value, n), b = ev.before, before = rodsValue(b), now = lessonAb.value();
+  const firstNeeded = b.findIndex((r, i) => r.h !== t[i].h || r.e !== t[i].e);
+  const how = goalStep.caption ? " " + goalStep.caption.replace(/^[\w-]+ rod: /, "").replace(/^./, c => c.toUpperCase()) : "";
+  if (firstNeeded !== -1 && ev.rod > firstNeeded)
+    return { slip: true, text: `Left to right! Start with the ${names[firstNeeded].toLowerCase()} rod.${how}` };
+  if (firstNeeded !== -1 && ev.rod < firstNeeded)
+    return { slip: true, text: `Not that rod yet. This move is on the ${names[firstNeeded].toLowerCase()} rod.${how}` };
+  const earthFirst = goalStep.together && goalStep.first === "e";
+  if (earthFirst && ev.kind === "h" && b[ev.rod].e !== t[ev.rod].e)
+    return { slip: true, text: `Earth beads first! Push ${plural(Math.abs(t[ev.rod].e - b[ev.rod].e), "earth bead")} up with your thumb, then lift the five bead with your index finger.` };
+  if (!earthFirst && ev.kind === "e" && b[ev.rod].h !== t[ev.rod].h)
+    return { slip: true, text: `Five bead first! Use your index finger to ${t[ev.rod].h ? "bring the five bead down" : "lift the five bead up"}, then move the earth beads.` };
+  if (ev.kind === "e" && ev.rod === firstNeeded) {   // earth beads must move as one group, not one by one
+    const bE = b[ev.rod].e, nE = lessonAb.rods[ev.rod].e, tE = t[ev.rod].e, need = Math.abs(tE - bE);
+    if (need >= 2 && nE !== tE && (nE - bE) * (tE - bE) > 0) {
+      const j = tE > bE ? tE : tE + 1, ord = ["", "1st", "2nd", "3rd", "4th"][j];
+      return { slip: true, text: `Move all ${need} earth beads at the same time, in one push! Tap the ${ord} bead from the beam and they all move together.` };
+    }
+  }
+  if (beadDist(now, goalStep.value) >= beadDist(before, goalStep.value))
+    return { slip: false, text: `Oops, not quite!${how}` };
+  if (goalStep.together && now !== goalStep.value)
+    return { slip: false, half: true, text: goalStep.first === "e" ? "Good, earth beads first! Now lift the five bead, right away." : "Good, five bead first! Now the earth beads, right away." };
+  return null;
+}
+function handleMistake(ev, fb, el, after) {
+  showFeedback(el, fb);
+  if (!fb || fb.half) return;
+  const back = rodsValue(ev.before), tok = playToken;
+  lessonAb.lock(true);
+  setTimeout(() => {
+    lessonAb.lock(false);
+    if (tok !== playToken) return;               // a demo or a new step took over
+    lessonAb.setValue(back);
+    el.textContent = el.textContent + " Back to your last spot. Try again!";
+    after && after();
+  }, 380);
+}
+function showFeedback(el, fb) {
+  if (!fb) { if (el.classList.contains("oops")) { el.className = "msg"; el.textContent = "Keep going."; } return; }
+  if (!fb.half) sfx.oops();
+  el.className = fb.half ? "msg" : "msg oops"; el.textContent = fb.text;
+  if (!fb.half) speak(fb.text);
+}
+function tryChanged(ev) {
+  const steps = L.tryIt.steps, v = lessonAb.value(), msg = $("tryMsg");
+  if (tryState.k >= steps.length) return;
+  const goal = steps[tryState.k].value;
+  const ahead = steps.findIndex((x, j) => j >= tryState.k && x.value === v);
+  if (ahead !== -1) {
+    tryState.k = ahead + 1; sfx.good();
+    if (tryState.k === steps.length) { solveEq("tryEq", L.tryIt, v); cheer(); msg.className = "msg ok"; msg.textContent = `You did it! The board shows ${v}.`; setSay("We did it! Ready to practice on your own?"); $("toPractice").disabled = false; }
+    else { msg.className = "msg ok"; msg.textContent = "Yes! On to the next move."; }
+    updateTry(); return;
+  }
+  const cur = steps[tryState.k];
+  handleMistake(ev, moveFeedback(ev, cur), msg, () => { lessonAb.highlight(cur.value); setTimeout(() => { if (step === "try" && L.tryIt.steps[tryState.k] === cur) pointAt(cur.hand, "hover"); }, 340); });
+  lessonAb.highlight(goal);
+}
+
+// 4. PRACTICE
+const COUNT = 5;
+function startPractice() { prac = { i: 0, results: [] }; nextProblem(); }
+function nextProblem() {
+  Object.assign(prac, { problem: L.gen(), used: { hint: false, show: false, slip: false }, solved: false, k: 0 });
+  const who = prac.i % 2 ? "coco" : "mochi";
+  coach.innerHTML = `
+    ${talk(prac.i === 0 ? "Your turn. Five problems. Left to right, and use the right finger!" : pick(["Nice work. Here's the next one.", "You're getting faster!", "Keep going, you've got this.", "Woof! Next one."]), who)}
+    <div class="qbar">${Array.from({ length: COUNT }, (_, i) => `<i class="${i < prac.i ? "ok" : i === prac.i ? "cur" : ""}"></i>`).join("")}</div>
+    <div class="lbl">Problem ${prac.i + 1} of ${COUNT}</div>
+    <div class="prompt ${prac.problem.prompt.includes("=") ? "eq" : ""}">${prac.problem.prompt}</div>
+    ${prac.problem.start ? `<div class="lbl" style="text-transform:none;letter-spacing:0;font-weight:500">${prac.problem.start} is already on your abacus. Work out the answer with the beads.</div>` : ""}
+    <div class="msg" id="pracMsg">Move the beads to show the answer.</div>
+    <div class="row">
+      <button class="btn" id="hintBtn">${ICON.bulb}Hint</button>
+      <button class="btn" id="showBtn">${ICON.play}Show me</button>
+      <span class="spacer"></span>
+      <button class="btn go" id="nextBtn" disabled>${prac.i === COUNT - 1 ? "Finish" : "Next"}</button>
+    </div>`;
+  $("hintBtn").onclick = () => { prac.used.hint = true; const m = $("pracMsg"); m.className = "msg"; m.textContent = prac.problem.hint; speak(prac.problem.hint); };
+  $("showBtn").onclick = showMe;
+  $("nextBtn").onclick = () => { prac.i++; prac.i >= COUNT ? finish() : nextProblem(); };
+  lessonAb.setValue(prac.problem.start); setHand(null); pointAt(null);
+  const tmp = document.createElement("div"); tmp.innerHTML = prac.problem.prompt; speak(tmp.textContent);
+}
+async function showMe() {
+  prac.used.show = true; const p = prac.problem, m = $("pracMsg");
+  m.className = "msg";
+  const ok = await playSteps(p.start, p.steps, s => { m.innerHTML = `${fingerTag(s)} ${s.caption}`; });
+  if (ok && step === "practice") {
+    if (!prac.solved) { prac.solved = true; prac.results.push(1); }
+    m.className = "msg ok"; m.textContent = `That's how it's done. The answer is ${p.target}.`;
+    $("nextBtn").disabled = false;
+  }
+}
+function pracChanged(ev) {
+  if (!prac || prac.solved || lessonAb.locked) return;
+  const m = $("pracMsg");
+  if (lessonAb.value() === prac.problem.target) {
+    prac.solved = true;
+    const got = prac.used.show ? 1 : (prac.used.hint || prac.used.slip) ? 2 : 3;
+    prac.results.push(got); prac.streak = got === 3 ? (prac.streak || 0) + 1 : 0;
+    sfx.good(); cheer(); m.className = "msg ok";
+    m.textContent = pick(["Correct!", "That's right!", "Perfect!", "Exactly right!"]) + ` ${prac.problem.target}.` + (prac.streak >= 3 ? ` ${prac.streak} in a row!` : "");
+    const pe = coach.querySelector(".prompt.eq"); if (pe) pe.innerHTML = pe.innerHTML.replace("= ?", `= <b class="solved">${prac.problem.target}</b>`);
+    $("nextBtn").disabled = false; return;
+  }
+  const st = prac.problem.steps.filter(x => !x.say), v = lessonAb.value();
+  const hit = st.findIndex((x, j) => j >= prac.k && x.value === v);
+  if (hit !== -1) { prac.k = hit + 1; if (m.classList.contains("oops")) { m.className = "msg"; m.textContent = "That's it. Keep going."; } return; }
+  const fb = moveFeedback(ev, st[prac.k] || { value: prac.problem.target });
+  if (fb && fb.slip) prac.used.slip = true;
+  handleMistake(ev, fb, m);
+}
+function finish() {
+  const stars = Math.min(...prac.results);
+  progress[L.id] = Math.max(stars, starsOf(L.id)); store.set("progress2", progress);
+  const i = lessonIndex(L.id), next = LESSONS[i + 1];
+  sfx.win(); confetti();
+  const line = stars === 3 ? "Three stars! Perfect technique." : stars === 2 ? "Well done! For three stars, solve them with no hints and in the right order." : "Lesson complete! Try again on your own to earn more stars.";
+  coach.innerHTML = `
+    <div class="results">
+      ${duo(96, "cheer")}
+      ${starHTML(stars, "big")}
+      <div class="prompt">${line}</div>
+      <div class="row">
+        <button class="btn" id="again">${ICON.replay}Practice again</button>
+        <button class="btn" id="toMap">Course</button>
+        ${next ? `<button class="btn go" id="toNext">Next: ${next.title}</button>` : ""}
+      </div>
+    </div>`;
+  speak(line);
+  $("again").onclick = () => go("practice");
+  $("toMap").onclick = () => { show("mapView"); renderMap(); };
+  if (next) $("toNext").onclick = () => openLesson(i + 1);
+}
+
+function onLessonChange(ev) {
+  showNum($("lessonNum"), lessonAb.value(), $("lessonHide").checked);
+  if (!ev.user) return;
+  stopSpeech();
+  if (step === "drill") { drillChanged(ev); return; }
+  if (step === "try") tryChanged(ev);
+  if (step === "practice") pracChanged(ev);
+}
+$("lessonClear").onclick = () => {
+  if (lessonAb.locked) return;
+  if (step === "try") renderTry();
+  else if (step === "practice" && prac && !prac.solved) { prac.k = 0; lessonAb.setValue(prac.problem.start); }
+  else if (step === "drill") drillReset();
+  else if (step === "rule") lessonAb.setValue(L.watch.start);
+};
+
+// ---------- Practice tab ----------
+const DRILL_DEFAULT = { mode: "steps", op: "add", digits: 1, terms: 3, count: 10, timed: false, hints: true, speed: 1 };
+let S = { ...DRILL_DEFAULT, ...store.get("drill", {}) }, D = null, swInt = null;
+const MODES = {
+  steps: { k: "Abacus · with hints", name: "Step by step", desc: "Numbers come one at a time. Work each one on the abacus before the next appears." },
+  abacus: { k: "Abacus · no hints", name: "Abacus + answer", desc: "See the whole problem, work it out on the abacus, then type your answer." },
+  flash: { k: "No abacus", name: "Flash anzan", desc: "Numbers flash one at a time. Picture the beads in your head, then type the answer." }
+};
+const OPS = { add: "Adding", sub: "Taking away", mixed: "Mixed" };
+const fmtTime = ms => { const t = Math.max(0, ms) / 1000, m = Math.floor(t / 60), sec = t - m * 60; return `${m}:${sec < 10 ? "0" : ""}${sec.toFixed(1)}`; };
+const drillKey = X => [X.mode, X.op, X.digits, X.terms, X.mode === "flash" ? X.speed : X.timed ? "t" : ""].join("|");
+function seg(key, label, options, value) {
+  return `<div class="setting"><div class="lbl">${label}</div><div class="seg" data-key="${key}" role="radiogroup" aria-label="${label}">${options.map(([v, t]) => `<button role="radio" aria-checked="${String(v) === String(value)}" data-v="${v}">${t}</button>`).join("")}</div></div>`;
+}
+function renderSetup() {
+  $("setupPups").innerHTML = duo(76);
+  const best = store.get("drillBest", {})[drillKey(S)];
+  $("setup").innerHTML = `
+    <div class="modes">${Object.entries(MODES).map(([k, m]) => `<button class="mode ${S.mode === k ? "on" : ""}" data-mode="${k}" aria-pressed="${S.mode === k}"><span class="mode-k">${m.k}</span><span class="mode-t">${m.name}</span><span class="mode-d">${m.desc}</span></button>`).join("")}</div>
+    <div class="settings">
+      ${seg("op", "Operation", [["add", "Adding"], ["sub", "Taking away"], ["mixed", "Mixed"]], S.op)}
+      ${seg("digits", "Digits in each number", [[1, "1"], [2, "2"], [3, "3"]], S.digits)}
+      ${seg("terms", "Numbers in each problem", [2, 3, 4, 5, 6, 8, 10].map(x => [x, String(x)]), S.terms)}
+      ${seg("count", "Problems", [[5, "5"], [10, "10"], [20, "20"]], S.count)}
+      ${S.mode === "flash"
+        ? seg("speed", "Each number shows for", [[3, "3 s"], [2, "2 s"], [1.5, "1.5 s"], [1, "1 s"], [0.7, "0.7 s"], [0.5, "0.5 s"]], S.speed)
+        : seg("timed", "Stopwatch", [["false", "Off"], ["true", "On"]], S.timed)}
+      ${S.mode === "steps" ? seg("hints", "Hints and coaching", [["true", "On"], ["false", "Off"]], S.hints) : ""}
+    </div>
+    <div class="row">${best ? `<span class="best">Your best with these settings: ${best.correct} of ${best.count}${best.time ? ` in ${fmtTime(best.time)}` : ""}</span>` : `<span class="best">${MODES[S.mode].name} · ${OPS[S.op]} · ${S.digits}-digit · ${S.terms} numbers</span>`}<span class="spacer"></span><button class="btn go" id="startDrill">${ICON.play}Start</button></div>`;
+}
+$("setup").addEventListener("click", e => {
+  const m = e.target.closest(".mode"), b = e.target.closest(".seg button");
+  if (m) S.mode = m.dataset.mode;
+  else if (b) { const key = b.parentElement.dataset.key, v = b.dataset.v; S[key] = v === "true" ? true : v === "false" ? false : isNaN(+v) ? v : +v; }
+  else if (e.target.closest("#startDrill")) { startDrill(); return; }
+  else return;
+  store.set("drill", S); renderSetup();
+});
+function openPractice() { show("practiceView"); step = ""; D = null; renderSetup(); }
+
+function genDrill(X, n) {
+  const lo = X.digits === 1 ? 1 : 10 ** (X.digits - 1), hi = 10 ** X.digits - 1;
+  for (let t = 0; t < 300; t++) {
+    let terms = [];
+    if (X.op === "sub") {
+      const subs = Array.from({ length: X.terms - 1 }, () => rnd(lo, hi));
+      const first = subs.reduce((a, b) => a + b, 0) + rnd(lo, hi);   // big enough that nothing goes below zero
+      terms = [{ sign: "+", n: first }, ...subs.map(n => ({ sign: "−", n }))];
+    } else {
+      let total = 0;
+      for (let k = 0; k < X.terms; k++) {
+        const v = rnd(lo, hi); let sign = "+";
+        if (X.op === "mixed" && k > 0 && total - v >= 0 && Math.random() < .5) sign = "−";
+        terms.push({ sign, n: v }); total += sign === "+" ? v : -v;
+      }
+      if (X.op === "mixed" && X.terms > 2 && !terms.some(x => x.sign === "−")) continue;
+    }
+    const totals = []; let run = 0;
+    terms.forEach(x => { run += x.sign === "+" ? x.n : -x.n; totals.push(run); });
+    if (totals.every(v => v >= 0 && v < 10 ** n)) return { terms, totals, answer: run };
+  }
+  return { terms: [{ sign: "+", n: 2 }, { sign: "+", n: 2 }], totals: [2, 4], answer: 4 };
+}
+function startDrill() {
+  D = { X: { ...S }, n: S.digits + 2, i: 0, results: [], t0: performance.now() };
+  show("lessonView"); lessonMode(false); step = "drill";
+  lessonAb.setRods(D.n);
+  $("lessonTag").textContent = "Practice";
+  $("lessonTitle").textContent = `${MODES[D.X.mode].name} · ${OPS[D.X.op]} · ${D.X.digits}-digit`;
+  $("board").classList.toggle("nohand", !(D.X.mode === "steps" && D.X.hints));
+  $("stage").classList.toggle("solo", D.X.mode === "flash");
+  if (D.X.timed && D.X.mode !== "flash") swInt = setInterval(() => { const w = $("sw"); if (w && D) w.textContent = fmtTime(performance.now() - D.t0); }, 100);
+  drillProblem();
+}
+const signText = (x, j) => x.sign === "−" ? "−" : "";
+function sheetHTML(revealAll) {
+  const P = D.P;
+  return P.terms.map((x, j) => {
+    const st = revealAll || D.X.mode !== "steps" ? "" : j < D.k ? "done" : j === D.k ? "cur" : "next";
+    return `<div class="srow ${st}"><span class="sg">${signText(x, j)}</span><span class="sn">${x.n}</span><span class="ck">${st === "done" ? "✓" : ""}</span></div>`;
+  }).join("") + `<div class="sline"></div><div class="srow res"><span class="sg"></span><span class="sn" id="sheetAns">?</span><span class="ck"></span></div>`;
+}
+const qbarHTML = () => `<div class="qbar">${Array.from({ length: D.X.count }, (_, i) => `<i class="${i < D.i ? (D.results[i] && D.results[i].correct ? "ok" : "") : i === D.i ? "cur" : ""}"></i>`).join("")}</div>`;
+function drillProblem() {
+  D.P = genDrill(D.X, D.n); D.k = 0; D.pk = 0; D.done = false; D.used = { hint: false, show: false, slip: false }; D.pStart = performance.now();
+  lessonAb.highlight(null); pointAt(null); setHand(null);
+  if (D.X.mode === "flash") return renderFlash();
+  const P = D.P, steps = D.X.mode === "steps";
+  coach.innerHTML = `
+    <div class="drill-top"><span class="lbl">Problem ${D.i + 1} of ${D.X.count}</span>${D.X.timed ? `<span class="watch" id="sw">${fmtTime(performance.now() - D.t0)}</span>` : ""}</div>
+    ${qbarHTML()}
+    <div class="drill-body">
+      <div class="sheet" id="sheet">${sheetHTML()}</div>
+      <div class="drill-side">
+        <div class="msg" id="drillMsg">${steps ? `Show <b>${P.terms[0].n}</b> on the abacus.` : "Work it out on the abacus, then type your answer."}</div>
+        ${steps ? "" : `<form class="answer" id="ansForm"><input id="ans" inputmode="numeric" autocomplete="off" placeholder="Answer" aria-label="Your answer"><button class="btn go" type="submit">Check</button></form>`}
+      </div>
+    </div>
+    <div class="row">
+      ${steps && D.X.hints ? `<button class="btn" id="dHint">${ICON.bulb}Hint</button><button class="btn" id="dShow">${ICON.play}Show me</button>` : ""}
+      <span class="spacer"></span>
+      <button class="btn" id="dSkip">Skip</button>
+    </div>`;
+  lessonAb.setValue(0);
+  D.plan = planOp(0, "+", P.terms[0].n, D.n);
+  $("dSkip").onclick = () => problemDone(false, true);
+  if (steps) {
+    if (D.X.hints) {
+      $("dHint").onclick = () => { D.used.hint = true; const st = D.plan[D.pk] || D.plan[0], m = $("drillMsg"); if (!st) return; m.className = "msg"; m.innerHTML = `${fingerTag(st)} ${st.caption}`; speak(st.caption); };
+      $("dShow").onclick = drillShowMe;
+    }
+    speak(String(P.terms[0].n));
+  } else {
+    $("ansForm").onsubmit = e => { e.preventDefault(); checkTyped(); };
+    setTimeout(() => { const a = $("ans"); if (a) a.focus({ preventScroll: true }); }, 50);
+  }
+}
+const checkpoint = () => D.k ? D.P.totals[D.k - 1] : 0;
+function startTerm() {
+  const x = D.P.terms[D.k];
+  D.plan = planOp(checkpoint(), D.k ? x.sign : "+", x.n, D.n); D.pk = 0;
+  $("sheet").innerHTML = sheetHTML();
+  const m = $("drillMsg"); m.className = "msg";
+  m.innerHTML = `${x.sign === "+" ? "Add" : "Take away"} <b>${x.n}</b>.`;
+  speak(`${x.sign === "+" ? "plus" : "minus"} ${x.n}`);
+}
+function drillChanged(ev) {
+  if (!D || D.done || D.X.mode !== "steps") return;
+  const v = lessonAb.value(), goal = D.P.totals[D.k], m = $("drillMsg");
+  if (v === goal) { termDone(); return; }
+  if (!D.X.hints) return;
+  const hit = D.plan.findIndex((x, j) => j >= D.pk && x.value === v);
+  if (hit !== -1) { D.pk = hit + 1; if (m.classList.contains("oops")) { m.className = "msg"; m.textContent = "That's it. Keep going."; } return; }
+  const fb = moveFeedback(ev, D.plan[D.pk] || { value: goal });
+  if (fb && fb.slip) D.used.slip = true;
+  handleMistake(ev, fb, m);
+}
+function termDone() {
+  sfx.good(); D.k++;
+  if (D.k >= D.P.terms.length) { problemDone(true); return; }
+  startTerm();
+}
+async function drillShowMe() {
+  D.used.show = true;
+  const m = $("drillMsg"), tok0 = D;
+  const ok = await playSteps(checkpoint(), D.plan, st => { m.className = "msg"; m.innerHTML = `${fingerTag(st)} ${st.caption}`; });
+  if (ok && D === tok0 && step === "drill" && !D.done) termDone();
+}
+function checkTyped() {
+  if (D.done) return;
+  const raw = ($("ans").value || "").replace(/[^\d]/g, "");
+  if (!raw) { $("ans").focus(); return; }
+  problemDone(+raw === D.P.answer, false, +raw);
+}
+function problemDone(correct, skipped, typed) {
+  if (D.done) return;
+  D.done = true;
+  if (D.X.mode === "flash") { playToken++; const f = $("ansForm"); if (f) f.hidden = true; const n = $("flN"); if (n) { n.className = "fl-n small"; n.textContent = correct ? "Correct!" : "Answer: " + D.P.answer; } }
+  const time = performance.now() - D.pStart;
+  D.results.push({ correct, time, clean: correct && !D.used.hint && !D.used.show && !D.used.slip });
+  const P = D.P, m = $("drillMsg");
+  if (D.X.mode === "flash") { const rv = $("reveal"); rv.hidden = false; rv.textContent = P.terms.map(x => (x.sign === "−" ? "−" : "") + x.n).join("   ") + `   →   ${P.answer}`; }
+  else { $("sheet").innerHTML = sheetHTML(true); }
+  const a = $("sheetAns"); if (a) { a.textContent = P.answer; a.className = "sn " + (correct ? "ok" : "bad"); }
+  pointAt(null); setHand(null); lessonAb.highlight(null);
+  if (correct) { sfx.good(); cheerDrill(); m.className = "msg ok"; m.textContent = pick(["Correct!", "That's right!", "Perfect!", "Nailed it!"]) + ` The answer is ${P.answer}.`; }
+  else { sfx.oops(); m.className = "msg oops"; m.textContent = skipped ? `Skipped. The answer was ${P.answer}.` : `Not quite: you said ${typed}. The answer was ${P.answer}.`; }
+  m.hidden = false;
+  const goOn = () => { if (D && D.done) { D.i++; D.i >= D.X.count ? finishDrill() : drillProblem(); } };
+  if (correct) { const tok = playToken; setTimeout(() => { if (tok === playToken) goOn(); }, D.X.mode === "flash" ? 1400 : 1000); }
+  else { const row = coach.querySelector(".row:last-child"); const nb = document.createElement("button"); nb.className = "btn go"; nb.textContent = "Next"; nb.onclick = goOn; row.appendChild(nb); const sk = $("dSkip"); if (sk) sk.remove(); nb.focus(); }
+}
+function cheerDrill() {
+  if (D.X.mode !== "flash") { const f = $("lessonFrame"); f.classList.remove("win"); void f.offsetWidth; f.classList.add("win"); }
+}
+function renderFlash() {
+  coach.innerHTML = `
+    <div class="drill-top"><span class="lbl">Problem ${D.i + 1} of ${D.X.count}</span><span class="lbl">${D.X.speed} s per number</span></div>
+    ${qbarHTML()}
+    <div class="flash"><span class="fl-n small" id="flN">Ready?</span><span class="fl-c" id="flC"></span></div>
+    <form class="answer" id="ansForm" hidden><input id="ans" inputmode="numeric" autocomplete="off" placeholder="Your answer" aria-label="Your answer"><button class="btn go" type="submit">Check</button></form>
+    <div class="reveal" id="reveal" hidden></div>
+    <div class="msg" id="drillMsg" hidden></div>
+    <div class="row"><span class="spacer"></span><button class="btn" id="dSkip">Skip</button></div>`;
+  $("ansForm").onsubmit = e => { e.preventDefault(); checkTyped(); };
+  $("dSkip").onclick = () => problemDone(false, true);
+  runFlash();
+}
+async function runFlash() {
+  const tok = ++playToken, P = D.P, ms = D.X.speed * 1000, el = $("flN");
+  el.className = "fl-n small"; el.textContent = "Ready?";
+  await wait(1000); if (tok !== playToken) return;
+  el.className = "fl-n";
+  for (let j = 0; j < P.terms.length; j++) {
+    const x = P.terms[j];
+    el.textContent = (x.sign === "−" ? "−" : "") + x.n;
+    el.classList.remove("in"); void el.offsetWidth; el.classList.add("in");
+    $("flC").textContent = `${j + 1} of ${P.terms.length}`;
+    tone(880, .04, "sine", .05);
+    await wait(ms * .82); if (tok !== playToken) return;
+    el.textContent = ""; await wait(Math.max(120, ms * .18)); if (tok !== playToken) return;
+  }
+  el.className = "fl-n small"; el.textContent = "What's the answer?"; $("flC").textContent = "";
+  D.pStart = performance.now();
+  $("ansForm").hidden = false; $("ans").focus({ preventScroll: true });
+}
+function finishDrill() {
+  clearInterval(swInt);
+  const R = D.results, correct = R.filter(r => r.correct).length, total = R.reduce((a, r) => a + r.time, 0);
+  const roundTime = performance.now() - D.t0, clean = R.filter(r => r.clean).length;
+  const key = drillKey(D.X), all = store.get("drillBest", {}), prev = all[key];
+  const rec = { correct, count: D.X.count, time: D.X.timed && D.X.mode !== "flash" ? roundTime : 0 };
+  const better = !prev || correct > prev.correct || (correct === prev.correct && rec.time && (!prev.time || rec.time < prev.time));
+  if (better) { all[key] = rec; store.set("drillBest", all); }
+  sfx.win(); if (correct >= Math.ceil(D.X.count * .8)) confetti();
+  const line = correct === D.X.count ? "A perfect round!" : correct >= D.X.count * .8 ? "Great round!" : correct >= D.X.count * .5 ? "Nice work. Keep practicing!" : "Good effort. Try a slower speed or fewer numbers.";
+  coach.innerHTML = `
+    <div class="results">
+      ${duo(96, "cheer")}
+      <div class="prompt">${line}</div>
+      <div class="stats">
+        <div class="stat"><b>${correct} / ${D.X.count}</b><span>correct</span></div>
+        ${D.X.timed && D.X.mode !== "flash" ? `<div class="stat"><b>${fmtTime(roundTime)}</b><span>total time</span></div><div class="stat"><b>${fmtTime(total / R.length)}</b><span>per problem</span></div>` : ""}
+        ${D.X.mode === "flash" ? `<div class="stat"><b>${D.X.speed} s</b><span>per number</span></div>` : ""}
+        ${D.X.mode === "steps" && D.X.hints ? `<div class="stat"><b>${clean}</b><span>with perfect technique</span></div>` : ""}
+      </div>
+      ${better ? `<div class="msg ok">New personal best for these settings!</div>` : prev ? `<div class="best">Your best: ${prev.correct} of ${prev.count}${prev.time ? ` in ${fmtTime(prev.time)}` : ""}</div>` : ""}
+      <div class="row"><button class="btn go" id="again">${ICON.replay}Go again</button><button class="btn" id="toSetup">Change settings</button></div>
+    </div>`;
+  speak(line);
+  $("again").onclick = () => startDrill();
+  $("toSetup").onclick = openPractice;
+}
+function drillReset() {
+  if (!D || D.done || lessonAb.locked) return;
+  if (D.X.mode === "steps") { D.pk = 0; lessonAb.setValue(checkpoint()); } else lessonAb.setValue(0);
+}
+function lessonMode(isLesson) {
+  $("stepper").hidden = !isLesson;
+  $("stage").classList.remove("solo");
+  $("board").classList.remove("nohand");
+  $("backBtn").lastChild.textContent = isLesson ? "Course" : "Practice";
+}
+
+function confetti() {
+  if (reduceMotion) return;
+  const colors = ["var(--accent)", "var(--amber)", "var(--good)", "var(--bead-hi)", "var(--gold-hi)"];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement("span"); c.className = "confetti";
+    c.style.left = Math.random() * 100 + "vw"; c.style.background = pick(colors);
+    c.style.animationDuration = (1.8 + Math.random() * 1.4) + "s"; c.style.animationDelay = Math.random() * .3 + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 3600);
+  }
+}
+
+$("homeBtn").onclick = () => { step = ""; show("mapView"); renderMap(); };
+$("backBtn").onclick = () => { if (step === "drill") openPractice(); else { show("mapView"); renderMap(); } };
+$("drillBtn").onclick = openPractice;
+$("heroDrill").onclick = openPractice;
+$("playBtn").onclick = () => { show("playView"); $("playPup").innerHTML = poodle(56, "coco"); };
+renderMute();
+loadVoices();
+renderMap();
+</script>
