@@ -81,7 +81,7 @@ The abacus grows to `digits + 2` rods. Best scores are saved per settings combin
 
 ## Ideas the owner wants next (roadmap)
 
-The site covers the same 34 rules as the owner's book. **The owner has decided: no multiplication, division or times tables.** Keep the scope to adding and taking away.
+The site covers the same 34 rules as the owner's book. **The owner has decided: no multiplication, division or times tables for now.** Keep the scope to adding and taking away unless the owner asks to add them later.
 
 1. Rule Mixer: mixed practice across all 34 rules, ending with a "Rules Champion" test and badge.
 2. A more human voice: pre-recorded clips (the owner's own voice or generated with a TTS service) with the browser voice as fallback.
