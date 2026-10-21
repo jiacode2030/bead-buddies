@@ -6,13 +6,14 @@ A website that teaches kids the Japanese abacus (soroban), step by step, with Mo
 
 - **Unit 0: Meet the Abacus.** The parts of the soroban, reading left to right, and which finger adds and takes away.
 - **Units 1–6: all 34 rules.** Small friends, big friends and mixed friends, for adding and taking away.
+- **Unit 7: Rule Mixer.** All 34 rules mixed together, then the Rules Champion test and badge.
 - **Every lesson:** learn the rule, watch Mochi demonstrate it (with an animated pointer and hand), try it with Coco, then practice. Wrong moves are explained and the beads snap back.
 - **Practice room:** three modes.
   - Step by step on the abacus, with optional hints.
   - Abacus plus a typed answer.
   - Flash anzan (mental math).
 - **Practice settings:** adding, taking away or mixed; 1 to 3 digits; a stopwatch; flash speeds.
-- **Extras:** narration you can turn off, and progress and best scores saved in the browser.
+- **Extras:** narration you can turn off, progress and best scores saved in the browser, a backup file to keep progress safe, and a privacy page. No accounts and no tracking.
 
 ## Run it
 
@@ -24,7 +25,7 @@ It is a single file with no build step. Open `index.html` in a web browser.
 node tests/verify.mjs
 ```
 
-This checks all 34 rules and the practice problem generator. It needs Node.js 18 or newer.
+This checks all 34 rules, the Rule Mixer and Champion test, and the practice problem generator. It needs Node.js 18 or newer.
 
 ## Put it online (free)
 

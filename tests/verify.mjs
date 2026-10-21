@@ -69,7 +69,7 @@ function forced(kind, d, n, tens) {
 const KIND_OF_UNIT = { 1: "sfAdd", 2: "sfSub", 3: "bfAdd", 4: "bfSub", 5: "mxAdd", 6: "mxSub" };
 
 // 1 + 2. Rule lessons
-const ruleLessons = LESSONS.filter(l => l.unit >= 1);
+const ruleLessons = LESSONS.filter(l => l.formula);
 let problems = 0;
 for (const L of ruleLessons) {
   const n = +L.formula.lhs.slice(1), add = L.formula.lhs[0] === "+", kind = KIND_OF_UNIT[L.unit];
@@ -87,6 +87,22 @@ for (const L of ruleLessons) {
   }
 }
 for (const L of LESSONS.filter(l => l.unit === 0)) for (let i = 0; i < 200; i++) { const p = L.gen(); problems++; checkSteps(L.id, p.start, p.steps, p.target); }
+
+// Unit 7: Rule Mixer and the Rules Champion test
+const mixer = LESSONS.find(l => l.id === "7-1"), champ = LESSONS.find(l => l.id === "7-2");
+if (!mixer || !champ) fail("Unit 7 lessons are missing");
+else {
+  for (let i = 0; i < 2000; i++) { const p = mixer.gen(); problems++; checkSteps("7-1", p.start, p.steps, p.target); }
+  for (let r = 0; r < 200; r++) {
+    champ.start();
+    if (champ.queue.length !== 12) fail("7-2", "test should have 12 problems, has", champ.queue.length);
+    const hints = new Set();
+    for (let i = 0; i < 12; i++) { const p = champ.gen(); problems++; hints.add(p.hint); checkSteps("7-2", p.start, p.steps, p.target); }
+    const perUnit = {};
+    for (const h of hints) { const no = +h.match(/rule (\d+)/)[1], u = ruleLessons[no - 1].unit; perUnit[u] = (perUnit[u] || 0) + 1; }
+    if ([1, 2, 3, 4, 5, 6].some(u => perUnit[u] !== 2)) fail("7-2", "should test two different rules from every unit", JSON.stringify(perUnit));
+  }
+}
 
 // 3. Practice-tab planner
 let ops = 0;

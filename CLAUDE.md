@@ -31,7 +31,8 @@ It is a **website, not an app**. It must work well on phones and tablets.
 | Abacus | `class Abacus`: any number of rods (`setRods(n)`), tap handling, highlight (gold beads), `lock()`. `toRods(v, n)`, `rodNames(n)`. |
 | Technique engine | `canAdd`, `canSub`, `moveSteps()` (direct moves, rod by rod, five bead first), `together()` (two-group "friend" motions), `planOp()` (plans any multi-digit add/subtract using the 34 rules; used by Practice). |
 | The 34 rules | `RULE_KINDS` (formula, steps, explanations, and the ones-digit tables that force each rule), `RULE_UNITS`, `buildRuleLessons()`. |
-| Curriculum | `UNITS`, `LESSONS` (Unit 0 lessons are written by hand; Units 1–6 are generated). `ALL_UNLOCKED = true`. |
+| Curriculum | `UNITS`, `LESSONS` (Unit 0 lessons are written by hand; Units 1–6 are generated; Unit 7 mixer lessons are pushed after). `ALL_UNLOCKED = true`. |
+| Progress backup | "Keep progress safe" card on the course page: `saveBackup` downloads a JSON file of `beadbuddies:` keys; `loadBackup` reads one back. Nothing is uploaded. |
 | Lesson flow | `go()`, `renderRule`, `renderWatch` + `playSteps` (demo), `renderTry`, practice (`nextProblem`, `pracChanged`, `finish`). |
 | Coaching | `moveFeedback()` decides what a wrong move was; `handleMistake()` shows the message and snaps the beads back. |
 | Pointer and hand | `pointAt()` (gold fingertip that glides to the bead), `setHand()` (animated hand card). |
@@ -46,8 +47,9 @@ It is a **website, not an app**. It must work well on phones and tablets.
 - **Unit 4**: Big friends taking away, rules 18–26: `−n = −10 +(10−n)`
 - **Unit 5**: Mixed friends adding, rules 27–30: `+n = +(n−5) −5 +10`
 - **Unit 6**: Mixed friends taking away, rules 31–34: `−n = −10 +5 −(n−5)`
+- **Unit 7: Rule Mixer** (practice only, no stepper). 7.1 Rule Mixer: 10 problems from any of the 34 rules, hints allowed; stars by share solved with perfect technique (90% = 3, 60% = 2). 7.2 Rules Champion test: 12 problems, two different rules from every unit, no Hint or Show me; 10 with perfect technique earns the badge (`badgeSVG`, saved as `beadbuddies:champion`, shown in the hero). Settings: `CHAMP_COUNT`, `CHAMP_PASS`.
 
-Every lesson has four steps: **Learn the rule → Watch Mochi → Try with Coco → Practice** (5 problems, up to 3 stars).
+Every lesson in Units 0–6 has four steps: **Learn the rule → Watch Mochi → Try with Coco → Practice** (5 problems, up to 3 stars).
 
 ## Teaching rules (owner's decisions: keep these)
 
@@ -83,7 +85,7 @@ The abacus grows to `digits + 2` rods. Best scores are saved per settings combin
 
 The site covers the same 34 rules as the owner's book. **The owner has decided: no multiplication, division or times tables for now.** Keep the scope to adding and taking away unless the owner asks to add them later.
 
-1. Rule Mixer: mixed practice across all 34 rules, ending with a "Rules Champion" test and badge.
-2. A more human voice: pre-recorded clips (the owner's own voice or generated with a TTS service) with the browser voice as fallback.
-3. Optional custom domain. Live now at `https://jiacode2030.github.io/bead-buddies/` (GitHub Pages, deploys from `main`). Moving to a new domain resets kids' saved progress (new origin), so add a progress backup first.
-4. Maybe: "Save / load my progress" (file or code, on-device only) so progress survives Safari's 7-day cleanup and device changes.
+Done: Rule Mixer and Rules Champion badge, progress backup, launch on GitHub Pages.
+
+1. A more human voice: pre-recorded clips (the owner's own voice or generated with a TTS service) with the browser voice as fallback.
+2. Optional custom domain. Live now at `https://jiacode2030.github.io/bead-buddies/` (GitHub Pages, deploys from `main`). Moving to a new domain resets kids' saved progress (new origin), so tell families to use "Save a backup" before the move.

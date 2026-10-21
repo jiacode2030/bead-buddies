@@ -82,7 +82,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 .lrow.next{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .stars{display:flex;gap:1px;font-size:.95rem}
 .stars .st,.big .st{color:var(--line)}.stars .st.on,.big .st.on{color:var(--amber)}
-.coming{border:1px dashed var(--line);border-radius:12px;padding:14px 16px;color:var(--muted);background:var(--paper)}
+.backup{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px 22px}
+.backup span{color:var(--muted);font-size:.92rem}
+.champ{display:inline-flex;align-items:center;gap:10px;margin:0 0 14px;padding:6px 14px 6px 8px;border-radius:12px;background:var(--amber-soft);border:1px solid var(--amber);font-size:.9rem;line-height:1.3}
 
 .lesson-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .lesson-head h1{font-size:clamp(1.25rem,3vw,1.6rem);margin:0;line-height:1.2}
@@ -313,6 +315,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       <div>
         <h1>Learn the soroban with Mochi and Coco</h1>
         <p>Mochi explains each rule and shows you how. Coco tries it with you. Then you practice on your own until it's easy.</p>
+        <div id="champ"></div>
         <div class="row"><button class="btn go" id="continueBtn">Start learning</button><button class="btn" id="heroDrill">Go to practice</button></div>
       </div>
     </div>
@@ -326,7 +329,10 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
         <a class="btn" href="https://www.amazon.com/dp/B0GDZB5F82" target="_blank" rel="noopener">Grown-ups: see the book on Amazon</a>
       </div>
     </div>
-    <div class="coming">Coming next: Rule Mixer, practice with all 34 rules mixed together, and a Rules Champion badge.</div>
+    <div class="backup">
+      <div><b>Keep progress safe</b><br><span>Stars and scores are saved on this device only. Grown-ups: save a backup file to keep them safe or move them to another device.</span></div>
+      <div class="row"><button class="btn" id="saveBackup">Save a backup</button><button class="btn" id="loadBackup">Load a backup</button><input type="file" id="backupFile" accept=".json,application/json" hidden></div>
+    </div>
   </section>
 
   <section id="lessonView" hidden>
@@ -399,6 +405,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       <p>Nothing personal. Bead Buddies has no accounts, no ads and no tracking or analytics. We never ask for a name, email or any other personal information.</p>
       <h2>Progress stays on this device</h2>
       <p>Stars, best scores and settings (like sound on or off) are saved only in this browser on this device. They are never sent to us or anyone else. You can delete them here, or by clearing this site's data in your browser settings.</p>
+      <p>"Save a backup" on the course page downloads a small file with this progress to your own device. It is never uploaded. "Load a backup" reads that file on this device only.</p>
       <p><button class="btn" id="clearData">Clear progress on this device</button></p>
       <h2>Hosting</h2>
       <p>The site is hosted on GitHub Pages. Like most web hosts, GitHub keeps standard server logs, including visitors' IP addresses, for security. See <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub's Privacy Statement</a>. The font, pictures and sounds all come from this site, not from other companies.</p>
@@ -554,6 +561,12 @@ function poodle(size = 56, who = "mochi", mood = "happy") {
     <circle cx="33" cy="61" r="4" fill="#F4A3A8" opacity=".55"/><circle cx="67" cy="61" r="4" fill="#F4A3A8" opacity=".55"/>
   </svg>`;
 }
+const badgeSVG = size => `<svg width="${size}" height="${size}" viewBox="0 0 100 100" role="img" aria-label="Rules Champion badge">
+    <path d="M32 60L22 96l14-7 8 10 6-33z" fill="var(--accent)"/><path d="M68 60l10 36-14-7-8 10-6-33z" fill="var(--accent-dark)"/>
+    <circle cx="50" cy="42" r="34" fill="var(--gold)" stroke="var(--gold-lo)" stroke-width="3"/><circle cx="50" cy="42" r="26" fill="none" stroke="var(--gold-hi)" stroke-width="2"/>
+    <text x="50" y="48" text-anchor="middle" font-family="Lexend, sans-serif" font-weight="700" font-size="22" fill="var(--wood-dark)">34</text>
+    <text x="50" y="59" text-anchor="middle" font-family="Lexend, sans-serif" font-weight="700" font-size="6.5" letter-spacing=".6" fill="var(--wood-dark)">CHAMPION</text>
+  </svg>`;
 const duo = (size, mood = "happy") => `<span style="display:inline-flex;align-items:flex-end">${poodle(size, "mochi", mood)}<span style="margin-left:-${Math.round(size * .15)}px">${poodle(Math.round(size * .92), "coco", mood)}</span></span>`;
 
 // ---------- abacus ----------
@@ -761,7 +774,8 @@ function buildRuleLessons() {
 const ALL_UNLOCKED = true; // every lesson is open
 const UNITS = [
   { id: 0, tag: "Unit 0", name: "Meet the Abacus", blurb: "The parts of the soroban, how to read it, and which finger adds and takes away." },
-  ...RULE_UNITS.map(u => ({ id: u.id, tag: "Unit " + u.id, name: u.name, blurb: u.blurb }))
+  ...RULE_UNITS.map(u => ({ id: u.id, tag: "Unit " + u.id, name: u.name, blurb: u.blurb })),
+  { id: 7, tag: "Unit 7", name: "Rule Mixer", blurb: "All 34 rules mixed together. Then take the Rules Champion test." }
 ];
 let lastKey = null;
 function fresh(fn) { for (let i = 0; i < 25; i++) { const p = fn(); const k = p.start + ":" + p.target; if (k !== lastKey) { lastKey = k; return p; } } return fn(); }
@@ -870,6 +884,19 @@ const LESSONS = [
   },
   ...buildRuleLessons()
 ];
+// Rule Mixer: problems from any of the 34 rules. Champion test: two from every unit, no hints.
+const RULE_LESSONS = LESSONS.filter(l => l.formula);
+const CHAMP_COUNT = 12, CHAMP_PASS = 10;
+const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = rnd(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+LESSONS.push(
+  { id: "7-1", num: "7.1", unit: 7, title: "Rule Mixer", sub: "10 problems, any of the 34 rules", mixer: true, count: 10,
+    hello: "Rule Mixer! Any of the 34 rules can come up. Look at the ones rod, then pick the right friend.",
+    gen: () => pick(RULE_LESSONS).gen() },
+  { id: "7-2", num: "7.2", unit: 7, title: "Rules Champion test", sub: `${CHAMP_COUNT} problems, no hints`, mixer: true, champion: true, noHelp: true, count: CHAMP_COUNT,
+    hello: `The Rules Champion test: ${CHAMP_COUNT} problems, two from every unit, no hints. Solve ${CHAMP_PASS} with perfect technique to earn the badge.`,
+    start() { this.queue = shuffle(RULE_UNITS.flatMap(u => shuffle(RULE_LESSONS.filter(l => l.unit === u.id)).slice(0, 2)).map(l => l.gen())); },
+    gen() { return this.queue.shift(); } }
+);
 const lessonIndex = id => LESSONS.findIndex(l => l.id === id);
 
 // ---------- progress ----------
@@ -887,6 +914,8 @@ function show(view) {
 function renderMap() {
   $("heroPups").innerHTML = duo(92);
   $("bookPups").innerHTML = duo(64);
+  const champ = store.get("champion", null);
+  $("champ").innerHTML = champ ? `<div class="champ">${badgeSVG(44)}<span><b>Rules Champion</b><br>Earned ${champ.date}</span></div>` : "";
   const next = LESSONS.findIndex((l, i) => unlocked(i) && !starsOf(l.id));
   $("continueBtn").textContent = Object.keys(progress).length ? "Continue" : "Start learning";
   $("continueBtn").onclick = () => openLesson(next === -1 ? 0 : next);
@@ -925,7 +954,8 @@ function openLesson(i) {
   L = LESSONS[i]; reached = 0; show("lessonView"); lessonMode(true); lessonAb.setRods(3);
   $("lessonTag").textContent = `${UNITS[L.unit].tag} · Lesson ${L.num || L.id.replace("-", ".")}`;
   $("lessonTitle").textContent = L.title;
-  go("rule");
+  if (L.mixer) { $("stepper").hidden = true; reached = 3; go("practice"); }   // mixer lessons are practice only
+  else go("rule");
 }
 function renderStepper() {
   $("stepper").innerHTML = STEPS.map(([k, label], i) =>
@@ -1140,27 +1170,29 @@ function tryChanged(ev) {
 }
 
 // 4. PRACTICE
-const COUNT = 5;
-function startPractice() { prac = { i: 0, results: [] }; nextProblem(); }
+const COUNT = 5, cnt = () => L.count || COUNT;
+function startPractice() { prac = { i: 0, results: [] }; if (L.start) L.start(); nextProblem(); }
 function nextProblem() {
   Object.assign(prac, { problem: L.gen(), used: { hint: false, show: false, slip: false }, solved: false, k: 0 });
   const who = prac.i % 2 ? "coco" : "mochi";
   coach.innerHTML = `
-    ${talk(prac.i === 0 ? "Your turn. Five problems. Left to right, and use the right finger!" : pick(["Nice work. Here's the next one.", "You're getting faster!", "Keep going, you've got this.", "Woof! Next one."]), who)}
-    <div class="qbar">${Array.from({ length: COUNT }, (_, i) => `<i class="${i < prac.i ? "ok" : i === prac.i ? "cur" : ""}"></i>`).join("")}</div>
-    <div class="lbl">Problem ${prac.i + 1} of ${COUNT}</div>
+    ${talk(prac.i === 0 ? (L.mixer ? L.hello : "Your turn. Five problems. Left to right, and use the right finger!") : pick(["Nice work. Here's the next one.", "You're getting faster!", "Keep going, you've got this.", "Woof! Next one."]), who)}
+    <div class="qbar">${Array.from({ length: cnt() }, (_, i) => `<i class="${i < prac.i ? "ok" : i === prac.i ? "cur" : ""}"></i>`).join("")}</div>
+    <div class="lbl">Problem ${prac.i + 1} of ${cnt()}</div>
     <div class="prompt ${prac.problem.prompt.includes("=") ? "eq" : ""}">${prac.problem.prompt}</div>
     ${prac.problem.start ? `<div class="lbl" style="text-transform:none;letter-spacing:0;font-weight:500">${prac.problem.start} is already on your abacus. Work out the answer with the beads.</div>` : ""}
     <div class="msg" id="pracMsg">Move the beads to show the answer.</div>
     <div class="row">
-      <button class="btn" id="hintBtn">${ICON.bulb}Hint</button>
-      <button class="btn" id="showBtn">${ICON.play}Show me</button>
+      ${L.noHelp ? "" : `<button class="btn" id="hintBtn">${ICON.bulb}Hint</button>
+      <button class="btn" id="showBtn">${ICON.play}Show me</button>`}
       <span class="spacer"></span>
-      <button class="btn go" id="nextBtn" disabled>${prac.i === COUNT - 1 ? "Finish" : "Next"}</button>
+      <button class="btn go" id="nextBtn" disabled>${prac.i === cnt() - 1 ? "Finish" : "Next"}</button>
     </div>`;
-  $("hintBtn").onclick = () => { prac.used.hint = true; const m = $("pracMsg"); m.className = "msg"; m.textContent = prac.problem.hint; speak(prac.problem.hint); };
-  $("showBtn").onclick = showMe;
-  $("nextBtn").onclick = () => { prac.i++; prac.i >= COUNT ? finish() : nextProblem(); };
+  if (!L.noHelp) {
+    $("hintBtn").onclick = () => { prac.used.hint = true; const m = $("pracMsg"); m.className = "msg"; m.textContent = prac.problem.hint; speak(prac.problem.hint); };
+    $("showBtn").onclick = showMe;
+  }
+  $("nextBtn").onclick = () => { prac.i++; prac.i >= cnt() ? finish() : nextProblem(); };
   lessonAb.setValue(prac.problem.start); setHand(null); pointAt(null);
   const tmp = document.createElement("div"); tmp.innerHTML = prac.problem.prompt; speak(tmp.textContent);
 }
@@ -1194,15 +1226,24 @@ function pracChanged(ev) {
   handleMistake(ev, fb, m);
 }
 function finish() {
-  const stars = Math.min(...prac.results);
+  // Lessons: stars = the weakest problem. Mixer: share of problems solved with perfect technique.
+  const n = prac.results.length, clean = prac.results.filter(x => x === 3).length;
+  let stars = Math.min(...prac.results), line, won = false;
+  if (L.champion) {
+    won = clean >= CHAMP_PASS; stars = won ? 3 : clean >= CHAMP_PASS - 3 ? 2 : 1;
+    if (won) store.set("champion", { date: new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) });
+    line = won ? `You're a Rules Champion! ${clean} of ${n} with perfect technique.` : `${clean} of ${n} with perfect technique. You need ${CHAMP_PASS} for the badge. Practice in the Rule Mixer, then try again!`;
+  } else if (L.mixer) {
+    stars = clean >= n * .9 ? 3 : clean >= n * .6 ? 2 : 1;
+    line = `${clean} of ${n} with perfect technique. ` + (stars === 3 ? "Three stars! You know your rules." : `For three stars, solve ${Math.ceil(n * .9)} with no hints and the right moves.`);
+  } else line = stars === 3 ? "Three stars! Perfect technique." : stars === 2 ? "Well done! For three stars, solve them with no hints and in the right order." : "Lesson complete! Try again on your own to earn more stars.";
   progress[L.id] = Math.max(stars, starsOf(L.id)); store.set("progress2", progress);
   const i = lessonIndex(L.id), next = LESSONS[i + 1];
-  sfx.win(); confetti();
-  const line = stars === 3 ? "Three stars! Perfect technique." : stars === 2 ? "Well done! For three stars, solve them with no hints and in the right order." : "Lesson complete! Try again on your own to earn more stars.";
+  sfx.win(); if (!L.champion || won) confetti();
   coach.innerHTML = `
     <div class="results">
-      ${duo(96, "cheer")}
-      ${starHTML(stars, "big")}
+      ${L.champion && won ? `<div class="row">${badgeSVG(110)}${duo(96, "cheer")}</div>` : duo(96, "cheer")}
+      ${L.champion ? "" : starHTML(stars, "big")}
       <div class="prompt">${line}</div>
       <div class="row">
         <button class="btn" id="again">${ICON.replay}Practice again</button>
@@ -1495,6 +1536,28 @@ $("drillBtn").onclick = openPractice;
 $("heroDrill").onclick = openPractice;
 $("playBtn").onclick = () => { show("playView"); $("playPup").innerHTML = poodle(56, "coco"); };
 $("privacyBtn").onclick = () => { step = ""; show("privacyView"); };
+// Progress backup: a file the family keeps. Nothing is uploaded.
+const ownKeys = () => { try { return Object.keys(localStorage).filter(k => k.startsWith("beadbuddies:")); } catch (e) { return []; } };
+$("saveBackup").onclick = () => {
+  const data = {}; ownKeys().forEach(k => { data[k] = localStorage.getItem(k); });
+  const day = new Date().toISOString().slice(0, 10);
+  const blob = new Blob([JSON.stringify({ app: "bead-buddies", saved: day, data }, null, 1)], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `bead-buddies-progress-${day}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+$("loadBackup").onclick = () => $("backupFile").click();
+$("backupFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  let entries;
+  try {
+    const j = f.size < 1e6 && JSON.parse(await f.text());
+    if (!j || j.app !== "bead-buddies" || !j.data || typeof j.data !== "object") throw 0;
+    entries = Object.entries(j.data).filter(([k, v]) => k.startsWith("beadbuddies:") && typeof v === "string");
+  } catch (err) { alert("That file isn't a Bead Buddies backup."); return; }
+  if (!confirm("Replace the progress on this device with this backup?")) return;
+  try { ownKeys().forEach(k => localStorage.removeItem(k)); entries.forEach(([k, v]) => localStorage.setItem(k, v)); } catch (err) {}
+  location.reload();
+};
 $("clearData").onclick = () => {
   if (!confirm("Clear all stars, best scores and settings on this device?")) return;
   try { Object.keys(localStorage).filter(k => k.startsWith("beadbuddies:")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
