@@ -19,7 +19,7 @@ It is a **website, not an app**. It must work well on phones and tablets.
 - The Privacy page (`privacyView`, footer link) describes exactly what the site does with data. If anything about data changes, update it first, including its "Last updated" date.
 - The page is written to be dropped into a host as-is (Netlify, GitHub Pages). It has a full `<html>`/`<head>` with `<meta charset="utf-8">` and the viewport meta; keep both, or phones show a shrunken desktop page.
 - Link previews: `og:` tags in `<head>` point at `preview.png` with an absolute URL on `jiacode2030.github.io/bead-buddies/`. If the site moves to a custom domain, update `og:url` and `og:image`. `icon.png` is the phone home-screen icon; the browser tab icon is an inline SVG.
-- The course page ends with a "For grown-ups" card linking to the book on Amazon (`https://www.amazon.com/dp/B0GDZB5F82`).
+- The course page ends with a book card ("Mochi and Coco are real dogs!": they are the owner's own poodles; the book is self-published on Amazon KDP). The Amazon button (`https://www.amazon.com/dp/B0GDZB5F82`) is labeled for grown-ups on purpose: store links on a kids' site are aimed at parents.
 
 ### Map of `index.html`
 
