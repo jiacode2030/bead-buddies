@@ -384,8 +384,11 @@ const sfx = {
   click() { tone(1400, .03, "square", .035); tone(700, .04, "triangle", .06); },
   good() { tone(660, .12); tone(990, .2, "sine", .1, .1); },
   oops() { tone(240, .16, "sine", .08); },
-  win() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, "sine", .1, i * .11)); }
+  win() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .22, "sine", .1, i * .11)); },
+  ting() { tone(1568, .5, "sine", .14); tone(3136, .25, "sine", .045); tone(4700, .12, "sine", .02); }   // small bell, one per flashed number
 };
+// Phones only allow sound after a tap, so wake the audio when a tap starts something that plays sound later.
+function wakeAudio() { if (muted) return; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {} }
 // Voice: pick the most natural voice on this device, speak sentence by sentence
 // (long utterances glitch in Chrome), and let callers wait until speech ends.
 let voices = [], voiceName = store.get("voice", ""), speakId = 0;
@@ -1224,6 +1227,7 @@ function genDrill(X, n) {
   return { terms: [{ sign: "+", n: 2 }, { sign: "+", n: 2 }], totals: [2, 4], answer: 4 };
 }
 function startDrill() {
+  wakeAudio();
   D = { X: { ...S }, n: S.digits + 2, i: 0, results: [], t0: performance.now() };
   show("lessonView"); lessonMode(false); step = "drill";
   lessonAb.setRods(D.n);
@@ -1358,7 +1362,7 @@ async function runFlash() {
     el.textContent = (x.sign === "−" ? "−" : "") + x.n;
     el.classList.remove("in"); void el.offsetWidth; el.classList.add("in");
     $("flC").textContent = `${j + 1} of ${P.terms.length}`;
-    tone(880, .04, "sine", .05);
+    sfx.ting();
     await wait(ms * .82); if (tok !== playToken) return;
     el.textContent = ""; await wait(Math.max(120, ms * .18)); if (tok !== playToken) return;
   }
