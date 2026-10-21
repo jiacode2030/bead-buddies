@@ -1,5 +1,23 @@
-<title>Bead Buddies</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bead Buddies: learn the soroban with Mochi and Coco</title>
+<meta name="description" content="Kids learn the Japanese abacus (soroban) step by step with Mochi and Coco, the poodles from the book Mochi's Counting Machine. All 34 rules, practice and flash anzan. Free, no sign-up.">
 <meta name="claude:viewport-fit-sides" content="cover">
+<!-- Link previews (texts, email, social). Image URLs must be absolute: update them if the site moves to a custom domain. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bead Buddies: learn the soroban with Mochi and Coco">
+<meta property="og:description" content="Kids learn the Japanese abacus step by step: all 34 rules, practice and flash anzan. Free, no sign-up.">
+<meta property="og:url" content="https://jiacode2030.github.io/bead-buddies/">
+<meta property="og:image" content="https://jiacode2030.github.io/bead-buddies/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mochi and Coco next to a wooden soroban">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235A3920'/%3E%3Crect x='6' y='7' width='5' height='18' rx='2' fill='%238C5C3B'/%3E%3Crect x='13.5' y='7' width='5' height='18' rx='2' fill='%23D98B2B'/%3E%3Crect x='21' y='7' width='5' height='18' rx='2' fill='%238C5C3B'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap">
@@ -261,7 +279,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
 @media (min-width:881px){:root{--bh:44px}}
 @media (prefers-reduced-motion:reduce){.bead,.pointer{transition:none}.bead.glow,.talk > svg,.coach > *,.number.pop,.big .st,.pointer .tip{animation:none!important}.confetti{display:none}}
+.book{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:14px}
+.book h2{font-size:1.15rem;margin:2px 0 4px}
+.book p{margin:0 0 12px;color:var(--muted);max-width:60ch}
+.book a.btn{text-decoration:none;color:var(--ink)}
+@media (max-width:560px){.book{grid-template-columns:minmax(0,1fr)}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <div class="top">
@@ -283,6 +308,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       </div>
     </div>
     <div id="units"></div>
+    <div class="book">
+      <div id="bookPups"></div>
+      <div>
+        <span class="tag">For grown-ups</span>
+        <h2>Meet Mochi and Coco in the book</h2>
+        <p>Mochi and Coco come from <i>Mochi's Counting Machine</i> by Jiarui Li, a children's book about learning the abacus.</p>
+        <a class="btn" href="https://www.amazon.com/dp/B0GDZB5F82" target="_blank" rel="noopener">See the book on Amazon</a>
+      </div>
+    </div>
     <div class="coming">Coming next: Rule Mixer practice, times tables, then multiplication and division on the abacus.</div>
   </section>
 
@@ -611,7 +645,7 @@ const RULE_KINDS = {
   sfAdd: { op: "+", ns: [1, 2, 3, 4], tens: [0, 3], digits: { 1: [4], 2: [3, 4], 3: [2, 3, 4], 4: [1, 2, 3, 4] },
     formula: n => ["+5", "−" + (5 - n)],
     steps: (s, n) => [{ ...together(s + n, "down", 5 - n), part: [0, 1] }],
-    why: (s, n) => { const free = 4 - s % 5; return [`${s} + ${n}. We need to add ${n}, but only ${plural(free, "earth bead")} ${isAre(free)} free.`, `So we use ${n}'s small friend, ${5 - n}. Add 5 first, then take away ${5 - n}.`]; },
+    why: (s, n) => { const free = 4 - s % 5; return [`${s} + ${n}. We need to add ${n}, but ${free ? `only ${plural(free, "earth bead")} ${isAre(free)}` : "no earth beads are"} free.`, `So we use ${n}'s small friend, ${5 - n}. Add 5 first, then take away ${5 - n}.`]; },
     heading: n => `Adding ${n} with a small friend`,
     friends: n => `${n} and ${5 - n} are small friends: together they make 5.`,
     explain: n => `When there aren't enough earth beads to add ${n}, add 5 and take away ${5 - n}. Five bead first: bring the five bead down with your index finger, then right away pull ${plural(5 - n, "earth bead")} down.` },
@@ -817,6 +851,7 @@ function show(view) {
 }
 function renderMap() {
   $("heroPups").innerHTML = duo(92);
+  $("bookPups").innerHTML = duo(64);
   const next = LESSONS.findIndex((l, i) => unlocked(i) && !starsOf(l.id));
   $("continueBtn").textContent = Object.keys(progress).length ? "Continue" : "Start learning";
   $("continueBtn").onclick = () => openLesson(next === -1 ? 0 : next);
@@ -1428,3 +1463,5 @@ renderMute();
 loadVoices();
 renderMap();
 </script>
+</body>
+</html>

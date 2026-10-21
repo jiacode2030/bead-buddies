@@ -16,7 +16,9 @@ It is a **website, not an app**. It must work well on phones and tablets.
 - Everything lives in one file: `index.html` (HTML, CSS and JavaScript together, no build step, no framework, no dependencies).
 - The only external resource is the Google Font **Lexend**.
 - Progress and settings are saved in the browser with `localStorage` (keys start with `beadbuddies:`). There are no accounts and no server. Keep it that way unless the owner asks: adding logins for kids under 13 brings COPPA obligations.
-- The page is written to be dropped into a host as-is (Netlify, GitHub Pages). It has no `<html>`/`<head>` wrapper of its own because it was first published as a claude.ai artifact; browsers handle that fine. If you add a proper wrapper, include `<meta charset="utf-8">` and the viewport meta.
+- The page is written to be dropped into a host as-is (Netlify, GitHub Pages). It has a full `<html>`/`<head>` with `<meta charset="utf-8">` and the viewport meta; keep both, or phones show a shrunken desktop page.
+- Link previews: `og:` tags in `<head>` point at `preview.png` with an absolute URL on `jiacode2030.github.io/bead-buddies/`. If the site moves to a custom domain, update `og:url` and `og:image`. `icon.png` is the phone home-screen icon; the browser tab icon is an inline SVG.
+- The course page ends with a "For grown-ups" card linking to the book on Amazon (`https://www.amazon.com/dp/B0GDZB5F82`).
 
 ### Map of `index.html`
 

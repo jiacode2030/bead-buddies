@@ -40,5 +40,7 @@ This checks all 34 rules and the practice problem generator. It needs Node.js 18
 | File | What it is |
 |---|---|
 | `index.html` | The whole website |
+| `preview.png` | The picture shown when the link is shared |
+| `icon.png` | The icon when the site is added to a phone's home screen |
 | `CLAUDE.md` | Project notes and teaching decisions, read automatically by Claude Code |
 | `tests/verify.mjs` | Automated checks for the rules |
